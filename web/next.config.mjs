@@ -36,6 +36,19 @@ const nextConfig = {
     // them external keeps them out of the client bundle.
     config.externals.push("pino-pretty", "lokijs", "encoding");
 
+    // Privy imports Viem's chain catalog, and recent Viem versions include
+    // Tempo support through ox. Tempo's optional virtual master pool uses a
+    // dynamic require expression that webpack warns about even though this app
+    // only enables BSC chains. Keep the build output clean without muting other
+    // warnings.
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings ?? []),
+      {
+        module: /node_modules\/ox\/_esm\/tempo\/internal\/virtualMasterPool\.js/,
+        message: /Critical dependency: the request of a dependency is an expression/,
+      },
+    ];
+
     return config;
   },
 };
