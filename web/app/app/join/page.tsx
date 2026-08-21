@@ -199,8 +199,8 @@ export default function JoinPage() {
           </h2>
           <p className="mt-1 text-sm text-muted">
             Add the wallet of the member who referred you. If you came alone,
-            leave this blank and you will enter under the protocol root, then
-            build your own tree from your own referral link.
+            leave this blank and you will start under the protocol, then build
+            your own tree from your own referral link.
           </p>
 
           <label htmlFor="sponsor" className="label mt-5 block">
@@ -210,7 +210,7 @@ export default function JoinPage() {
             id="sponsor"
             value={sponsor}
             onChange={(e) => setSponsor(e.target.value.trim())}
-            placeholder="Leave blank to start fresh under protocol root"
+            placeholder="Leave blank to start under the protocol"
             spellCheck={false}
             autoComplete="off"
             disabled={busy}
@@ -230,11 +230,8 @@ export default function JoinPage() {
           )}
           {usingProtocolRoot && (
             <div className="mt-3 rounded-xl border border-gold/20 bg-gold/8 p-3 text-sm text-muted">
-              No sponsor selected. You will start under the protocol root{" "}
-              <span className="font-mono text-ink">
-                {shortAddress(effectiveSponsor, 6)}
-              </span>
-              . After joining, your own referral link starts your tree.
+              No sponsor selected. You will start under the protocol. After
+              joining, your own referral link starts your tree.
             </div>
           )}
           {sponsor && !sponsorValid && (
