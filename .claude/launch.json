@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nexaflow",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/0xhardhat/Downloads/BinaryContract/web",
+        "run",
+        "dev"
+      ],
+      "port": 3000,
+      "autoPort": false
+    }
+  ]
+}

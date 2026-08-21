@@ -1,0 +1,17 @@
+{
+  "name": "binarycontract",
+  "private": true,
+  "description": "BinaryMembershipV1 contract + the NexaFlow frontend. Root scripts delegate to web/ so the repo can be driven from one place.",
+  "scripts": {
+    "dev": "npm --prefix web run dev",
+    "build": "npm --prefix web run build",
+    "start": "npm --prefix web run start",
+    "lint": "npm --prefix web run lint",
+    "typecheck": "npm --prefix web run typecheck",
+    "install:web": "npm --prefix web install",
+    "gen:abi": "npm --prefix web run gen:abi",
+    "abi": "forge build && npm --prefix web run gen:abi",
+    "test:contract": "forge test",
+    "check": "forge test && npm --prefix web run typecheck && npm --prefix web run build"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "nexaflow-keeper",
+  "private": true,
+  "type": "module",
+  "description": "Advances the NexaFlow price oracle. One transaction, on a schedule.",
+  "scripts": {
+    "start": "node update-oracle.mjs",
+    "watch": "node update-oracle.mjs --watch",
+    "dry": "node update-oracle.mjs --dry-run"
+  },
+  "dependencies": { "viem": "2.52.0" }
+}

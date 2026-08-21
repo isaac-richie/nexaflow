@@ -1,0 +1,9 @@
+testMode: property
+testLimit: 200000
+seqLen: 200
+shrinkLimit: 5000
+contractAddr: "0x00a329c0648769A73afAc7F9381E08FB43dBEA72"
+deployer: "0x00a329c0648769A73afAc7F9381E08FB43dBEA72"
+sender: ["0x00a329c0648769A73afAc7F9381E08FB43dBEA72"]
+cryticArgs: ["--compile-force-framework", "foundry"]
+format: text

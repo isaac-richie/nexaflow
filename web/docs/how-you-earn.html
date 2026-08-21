@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NexaFlow — How You Earn</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#F0B90B;
+    --gold-hi:#FCD535;
+    --ink:#0B0E11;
+    --body:#333A44;
+    --muted:#6B7480;
+    --line:#E3E6EA;
+    --panel:#F6F7F9;
+    --dark:#0B0E11;
+    --dark-2:#181A20;
+  }
+  @page { size: A4; margin: 0; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--body);
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    font-size:10.5pt;
+    line-height:1.65;
+  }
+  .page{
+    width:210mm; height:297mm;
+    padding:20mm 18mm;
+    page-break-after:always;
+    position:relative;
+    overflow:hidden;
+    background:#fff;
+  }
+  .page:last-child{ page-break-after:auto; }
+
+  h1,h2,h3{ font-family:'Sora',sans-serif; color:var(--ink); }
+  h2{ font-size:20pt; font-weight:700; letter-spacing:-0.02em; line-height:1.2; }
+  h3{ font-size:12pt; font-weight:600; margin-bottom:4px; }
+  p{ margin-bottom:10px; }
+  strong{ color:var(--ink); font-weight:600; }
+  .mono{ font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums; }
+
+  .eyebrow{
+    font-size:7.5pt; font-weight:600; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:8px;
+  }
+  .lead{ font-size:11.5pt; color:var(--muted); margin-bottom:20px; }
+  .rule{ height:3px; width:52px; background:var(--gold); border-radius:2px; margin:14px 0 20px; }
+
+  /* Cover */
+  .cover{ background:var(--dark); color:#EAECEF; padding:0; }
+  .cover-inner{ padding:28mm 18mm; height:100%; display:flex; flex-direction:column; }
+  .cover h1{
+    font-size:40pt; font-weight:800; color:#fff;
+    letter-spacing:-0.03em; line-height:1.04; margin-top:auto;
+  }
+  .cover h1 .g{
+    background:linear-gradient(96deg,var(--gold-hi),var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .cover .sub{ color:#98A1AD; font-size:12pt; margin-top:16px; max-width:118mm; }
+  .cover .foot{ margin-top:auto; display:flex; justify-content:space-between;
+    align-items:flex-end; border-top:1px solid #262B33; padding-top:14px;
+    font-size:8.5pt; color:#6B7480; }
+  .brand{ display:flex; align-items:center; gap:9px; font-family:'Sora'; font-weight:700;
+    font-size:15pt; color:#fff; }
+  .brand .g{ color:var(--gold); }
+
+  /* Panels */
+  .panel{ background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:16px 18px; margin:14px 0; }
+  .panel-dark{ background:var(--dark); border:none; border-radius:12px;
+    padding:18px; margin:16px 0; }
+  .cap{ font-size:8.5pt; color:var(--muted); text-align:center; margin-top:10px; }
+  .cap-dark{ color:#6B7480; }
+
+  /* Tables */
+  table{ width:100%; border-collapse:collapse; font-size:9.5pt; margin:10px 0; }
+  th{ text-align:left; font-size:7.5pt; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--muted); font-weight:600; padding:8px 8px; border-bottom:2px solid var(--line); }
+  td{ padding:8px; border-bottom:1px solid var(--line); }
+  td.num, th.num{ text-align:right; font-family:'JetBrains Mono',monospace;
+    font-variant-numeric:tabular-nums; }
+  tr.hi td{ background:#FFFBEB; }
+  .gold{ color:#8A6A00; font-weight:600; }
+
+  /* Callouts */
+  .note{ border-left:3px solid var(--gold); background:#FFFBEB;
+    padding:12px 14px; border-radius:0 8px 8px 0; margin:14px 0; font-size:10pt; }
+  .note strong{ color:#7A5D00; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .stat{ background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:14px; }
+  .stat .v{ font-family:'Sora'; font-size:19pt; font-weight:700; color:var(--ink); }
+  .stat .l{ font-size:8.5pt; color:var(--muted); line-height:1.4; margin-top:2px; }
+
+  .steps{ counter-reset:s; }
+  .step{ display:flex; gap:13px; margin-bottom:13px; }
+  .step .n{ flex:0 0 25px; height:25px; border-radius:50%;
+    background:var(--gold); color:var(--ink); font-family:'Sora'; font-weight:700;
+    font-size:10pt; display:flex; align-items:center; justify-content:center; }
+
+  .pnum{ position:absolute; bottom:11mm; right:18mm; font-size:8pt; color:#A6AEB8;
+    font-family:'JetBrains Mono',monospace; }
+  .ptitle{ position:absolute; bottom:11mm; left:18mm; font-size:8pt; color:#A6AEB8; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ COVER ══════════════ -->
+<section class="page cover">
+  <div class="cover-inner">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M6 26 C6 18, 16 18, 16 10 M26 26 C26 18, 16 18, 16 10"
+              stroke="#F0B90B" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="16" cy="7" r="4" fill="#FCD535"/>
+        <circle cx="6" cy="27" r="2.6" fill="#F0B90B"/>
+        <circle cx="26" cy="27" r="2.6" fill="#F0B90B"/>
+      </svg>
+      <!-- One flex item, or the container's `gap` opens a space inside the word. -->
+      <span>Nexa<span class="g">Flow</span></span>
+    </div>
+
+    <h1>How you<br><span class="g">earn</span></h1>
+    <p class="sub">A plain guide to boards, spillover, spillunder and rollover.
+      What you pay, what you get back, and the rules that decide it.</p>
+
+    <div class="foot">
+      <span>Member guide</span>
+      <span>BNB Chain</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ 1. THE BOARD ══════════════ -->
+<section class="page">
+  <div class="eyebrow">The core idea</div>
+  <h2>Your board pays you</h2>
+  <div class="rule"></div>
+
+  <p class="lead">Everything in NexaFlow comes down to one thing: your board.
+    Understand the board and you understand the whole system.</p>
+
+  <p>When you join a stage you get a <strong>board</strong>. A board is the set of
+    positions sitting underneath you. Every time one of those positions gets
+    filled by somebody joining, <strong>you get paid</strong>.</p>
+
+  <p>You are paid the same fixed amount for every position, no matter who fills
+    it or how it got filled. The payment lands in your wallet in the same
+    transaction that person joins. There is nothing to claim and nothing waiting
+    in a balance somewhere.</p>
+
+  <div class="panel-dark">
+    <svg viewBox="0 0 620 300" width="100%">
+      <defs>
+        <linearGradient id="e1" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#F0B90B" stop-opacity=".35"/>
+          <stop offset="100%" stop-color="#FCD535" stop-opacity=".9"/>
+        </linearGradient>
+        <linearGradient id="o1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#FCD535"/><stop offset="100%" stop-color="#F0B90B"/>
+        </linearGradient>
+      </defs>
+      <!-- edges -->
+      <g stroke="url(#e1)" stroke-width="1.8" fill="none" stroke-linecap="round">
+        <path d="M310 62 C310 100, 170 100, 170 148"/>
+        <path d="M310 62 C310 100, 450 100, 450 148"/>
+        <path d="M170 148 C170 190, 100 190, 100 236"/>
+        <path d="M170 148 C170 190, 240 190, 240 236"/>
+        <path d="M450 148 C450 190, 380 190, 380 236"/>
+        <path d="M450 148 C450 190, 520 190, 520 236"/>
+      </g>
+      <!-- arrows showing money moving UP -->
+      <g fill="#FCD535">
+        <polygon points="292,86 300,96 284,96"/>
+        <polygon points="328,86 336,96 320,96"/>
+      </g>
+      <!-- owner -->
+      <circle cx="310" cy="62" r="27" fill="url(#o1)"/>
+      <text x="310" y="67" text-anchor="middle" font-family="Sora" font-size="12"
+            font-weight="700" fill="#0B0E11">YOU</text>
+      <!-- level 1 -->
+      <g>
+        <circle cx="170" cy="148" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".45"/>
+        <text x="170" y="153" text-anchor="middle" font-family="JetBrains Mono"
+              font-size="10" fill="#98A1AD">$5</text>
+        <circle cx="450" cy="148" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".45"/>
+        <text x="450" y="153" text-anchor="middle" font-family="JetBrains Mono"
+              font-size="10" fill="#98A1AD">$5</text>
+      </g>
+      <!-- level 2 -->
+      <g>
+        <circle cx="100" cy="236" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".45"/>
+        <text x="100" y="241" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#98A1AD">$5</text>
+        <circle cx="240" cy="236" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".45"/>
+        <text x="240" y="241" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#98A1AD">$5</text>
+        <circle cx="380" cy="236" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".45"/>
+        <text x="380" y="241" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#98A1AD">$5</text>
+        <circle cx="520" cy="236" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".45"/>
+        <text x="520" y="241" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#98A1AD">$5</text>
+      </g>
+      <text x="310" y="288" text-anchor="middle" font-family="Inter" font-size="11" fill="#98A1AD">
+        6 positions x $5 = <tspan fill="#FCD535" font-weight="600">$30 back on a $20 entry</tspan>
+      </text>
+    </svg>
+    <p class="cap cap-dark">A Stage 1 board. Two positions directly under you, four under them.
+      The arrows show the direction money travels: upward, to you.</p>
+  </div>
+
+  <div class="note">
+    <strong>The key point.</strong> You are not paid only for the two people
+    directly under you. You are paid for <em>every</em> position on your board,
+    including the ones further down.
+  </div>
+
+  <div class="ptitle">NexaFlow / How you earn</div><div class="pnum">2</div>
+</section>
+
+<!-- ══════════════ 2. THE STAGES ══════════════ -->
+<section class="page">
+  <div class="eyebrow">The ladder</div>
+  <h2>Six stages</h2>
+  <div class="rule"></div>
+
+  <p class="lead">Each stage is a separate board with its own entry fee and its own
+    payment per position. You climb them in order.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Stage</th>
+        <th class="num">Entry fee</th>
+        <th class="num">You get per position</th>
+        <th class="num">Positions</th>
+        <th class="num">Full board pays you</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="hi"><td><strong>Stage 1</strong></td><td class="num">$20</td><td class="num">$5</td><td class="num">6</td><td class="num gold">$30</td></tr>
+      <tr><td><strong>Stage 2</strong></td><td class="num">$60</td><td class="num">$10</td><td class="num">14</td><td class="num gold">$140</td></tr>
+      <tr><td><strong>Stage 3</strong></td><td class="num">$180</td><td class="num">$25</td><td class="num">14</td><td class="num gold">$350</td></tr>
+      <tr><td><strong>Stage 4</strong></td><td class="num">$540</td><td class="num">$80</td><td class="num">14</td><td class="num gold">$1,120</td></tr>
+      <tr><td><strong>Stage 5</strong></td><td class="num">$1,620</td><td class="num">$250</td><td class="num">14</td><td class="num gold">$3,500</td></tr>
+      <tr><td><strong>Stage 6</strong></td><td class="num">$4,860</td><td class="num">$800</td><td class="num">14</td><td class="num gold">$11,200</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid3" style="margin-top:16px">
+    <div class="stat"><div class="v">3x</div><div class="l">Each stage costs three times the one before it</div></div>
+    <div class="stat"><div class="v">6 or 14</div><div class="l">Positions on a board. Stage 1 has 6, every stage above has 14</div></div>
+    <div class="stat"><div class="v">In order</div><div class="l">You must finish a stage before you can enter the next one</div></div>
+  </div>
+
+  <h3 style="margin-top:22px">Reading the table</h3>
+  <p>Take Stage 2. You pay <span class="mono">$60</span> to enter. Your board has
+    14 positions and each one pays you <span class="mono">$10</span>. If the whole
+    board fills you have received <span class="mono gold">$140</span>.</p>
+
+  <p>You do not have to wait for a full board to start earning. Each position pays
+    the moment it is filled. A board that is half full has paid you half.</p>
+
+  <div class="note">
+    <strong>Why the fees rise.</strong> A bigger entry fee funds a bigger payment
+    per position. The board size stays the same at 14, so the higher stages simply
+    move more money through the same structure.
+  </div>
+
+  <div class="ptitle">NexaFlow / How you earn</div><div class="pnum">3</div>
+</section>
+
+<!-- ══════════════ 3. HOW POSITIONS GET FILLED ══════════════ -->
+<section class="page">
+  <div class="eyebrow">Filling your board</div>
+  <h2>Three ways a position fills</h2>
+  <div class="rule"></div>
+
+  <p class="lead">Your board does not only fill with people you personally
+    introduce. This is the part most people find surprising, and it is the part
+    that makes the system work.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="n">1</div>
+      <div>
+        <h3>You introduce someone</h3>
+        <p style="margin:0">They join and take a position on your board. Straightforward.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">2</div>
+      <div>
+        <h3>Spillover from above</h3>
+        <p style="margin:0">Someone above you introduces a person, but their own two
+          slots are already taken. That person moves down and lands on your board
+          instead. You are paid for them, even though you have never met them.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">3</div>
+      <div>
+        <h3>Growth from below</h3>
+        <p style="margin:0">Somebody on your board introduces a person of their own.
+          That person still sits inside your board, so you are paid for them too.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-dark">
+    <svg viewBox="0 0 620 260" width="100%">
+      <defs>
+        <linearGradient id="e2" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#F0B90B" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="#FCD535" stop-opacity=".85"/>
+        </linearGradient>
+        <!-- Every SVG defines its own paints. Referencing a gradient declared in
+             a different SVG resolves inconsistently once Chrome paginates for
+             print, which silently turned one node olive instead of gold. -->
+        <linearGradient id="o2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#FCD535"/><stop offset="100%" stop-color="#F0B90B"/>
+        </linearGradient>
+      </defs>
+      <g stroke="url(#e2)" stroke-width="1.8" fill="none" stroke-linecap="round">
+        <path d="M310 48 C310 78, 190 78, 190 118"/>
+        <path d="M310 48 C310 78, 430 78, 430 118"/>
+        <path d="M190 118 C190 155, 120 155, 120 196"/>
+        <path d="M190 118 C190 155, 260 155, 260 196"/>
+      </g>
+      <!-- spill path -->
+      <path d="M340 44 C470 30, 545 100, 500 180" stroke="#FCD535" stroke-width="1.8"
+            stroke-dasharray="5 5" fill="none" stroke-linecap="round"/>
+      <polygon points="500,190 494,176 507,176" fill="#FCD535"/>
+
+      <circle cx="310" cy="48" r="21" fill="#2B3139" stroke="#F0B90B" stroke-opacity=".5"/>
+      <text x="310" y="53" text-anchor="middle" font-family="Sora" font-size="9" fill="#EAECEF">FULL</text>
+
+      <circle cx="190" cy="118" r="21" fill="url(#o2)"/>
+      <text x="190" y="123" text-anchor="middle" font-family="Sora" font-size="10"
+            font-weight="700" fill="#0B0E11">YOU</text>
+
+      <circle cx="430" cy="118" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".4"/>
+      <circle cx="120" cy="196" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".4"/>
+      <circle cx="260" cy="196" r="17" fill="#1E2329" stroke="#F0B90B" stroke-opacity=".4"/>
+      <circle cx="500" cy="196" r="17" fill="#1E2329" stroke="#FCD535"/>
+
+      <text x="536" y="132" font-family="Inter" font-size="10" fill="#FCD535">spills</text>
+      <text x="536" y="146" font-family="Inter" font-size="10" fill="#FCD535">down</text>
+    </svg>
+    <p class="cap cap-dark">Spillover. The dotted line is a new member being placed
+      further down because the positions above are taken.</p>
+  </div>
+
+  <div class="note">
+    <strong>Spillover and spillunder are the same event.</strong> Looked at from
+    above it is spillover, because the person spilled out of a full board. Looked
+    at from below it is spillunder, because they arrived under you without you
+    doing anything. Same person, same payment, two names.
+  </div>
+
+  <div class="ptitle">NexaFlow / How you earn</div><div class="pnum">4</div>
+</section>
+
+<!-- ══════════════ 4. ROLLOVER ══════════════ -->
+<section class="page">
+  <div class="eyebrow">Rollover, also called turnover</div>
+  <h2>A full board starts again</h2>
+  <div class="rule"></div>
+
+  <p class="lead">Filling your board is not the end. It resets and you earn from it
+    again.</p>
+
+  <p>When the last position on your board is filled, the board <strong>rolls
+    over</strong>. Your rollover counter goes up by one, the positions clear, and a
+    fresh empty board opens underneath you. People start filling it, and you start
+    being paid again at the same rate.</p>
+
+  <p>This can happen over and over. There is no cap on how many times a board can
+    roll over.</p>
+
+  <div class="panel-dark">
+    <svg viewBox="0 0 620 210" width="100%">
+      <!-- three states -->
+      <g font-family="Inter" font-size="10" fill="#98A1AD" text-anchor="middle">
+        <text x="95" y="196">1. Board filling</text>
+        <text x="310" y="196">2. Board full</text>
+        <text x="525" y="196">3. Fresh board</text>
+      </g>
+
+      <!-- state 1 -->
+      <circle cx="95" cy="45" r="19" fill="#FCD535"/>
+      <g fill="#1E2329" stroke="#F0B90B" stroke-opacity=".4">
+        <circle cx="60" cy="110" r="13"/><circle cx="130" cy="110" r="13"/>
+      </g>
+      <circle cx="60" cy="110" r="13" fill="#F0B90B" fill-opacity=".85" stroke="none"/>
+      <g stroke="#F0B90B" stroke-opacity=".45" fill="none">
+        <path d="M95 64 L60 97"/><path d="M95 64 L130 97"/>
+      </g>
+
+      <!-- state 2 -->
+      <circle cx="310" cy="45" r="19" fill="#FCD535"/>
+      <g fill="#F0B90B" fill-opacity=".85">
+        <circle cx="275" cy="110" r="13"/><circle cx="345" cy="110" r="13"/>
+      </g>
+      <g stroke="#F0B90B" stroke-opacity=".45" fill="none">
+        <path d="M310 64 L275 97"/><path d="M310 64 L345 97"/>
+      </g>
+      <text x="310" y="150" text-anchor="middle" font-family="JetBrains Mono"
+            font-size="10" fill="#FCD535">paid in full</text>
+
+      <!-- arrow -->
+      <path d="M395 100 L455 100" stroke="#FCD535" stroke-width="1.8" fill="none"/>
+      <polygon points="465,100 451,94 451,106" fill="#FCD535"/>
+      <text x="425" y="88" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#FCD535">rolls over</text>
+
+      <!-- state 3 -->
+      <circle cx="525" cy="45" r="19" fill="#FCD535"/>
+      <g fill="#1E2329" stroke="#F0B90B" stroke-opacity=".4" stroke-dasharray="3 3">
+        <circle cx="490" cy="110" r="13"/><circle cx="560" cy="110" r="13"/>
+      </g>
+      <g stroke="#F0B90B" stroke-opacity=".3" fill="none" stroke-dasharray="3 3">
+        <path d="M525 64 L490 97"/><path d="M525 64 L560 97"/>
+      </g>
+      <text x="525" y="150" text-anchor="middle" font-family="JetBrains Mono"
+            font-size="10" fill="#98A1AD">empty again</text>
+    </svg>
+    <p class="cap cap-dark">One rollover cycle. Gold positions are filled and paid.
+      The dotted board on the right is the new empty one.</p>
+  </div>
+
+  <h3>What rollovers are worth</h3>
+  <p>Each completed board pays you the full board amount for that stage. Five
+    rollovers at Stage 2 means five full boards.</p>
+
+  <div class="grid2">
+    <div class="panel" style="margin:6px 0">
+      <div class="mono" style="font-size:14pt;color:#0B0E11;font-weight:600">$140</div>
+      <div style="font-size:9pt;color:var(--muted)">one Stage 2 board</div>
+    </div>
+    <div class="panel" style="margin:6px 0">
+      <div class="mono gold" style="font-size:14pt;font-weight:600">$700</div>
+      <div style="font-size:9pt;color:var(--muted)">after five rollovers</div>
+    </div>
+  </div>
+
+  <div class="ptitle">NexaFlow / How you earn</div><div class="pnum">5</div>
+</section>
+
+<!-- ══════════════ 5. WORKED EXAMPLE ══════════════ -->
+<section class="page">
+  <div class="eyebrow">A worked example</div>
+  <h2>Following one member</h2>
+  <div class="rule"></div>
+
+  <p class="lead">Numbers make this clearer than words. Here is a member moving
+    through Stage 1 and Stage 2.</p>
+
+  <h3>Stage 1</h3>
+  <table>
+    <tbody>
+      <tr><td>Pays to enter</td><td class="num">$20</td></tr>
+      <tr><td>First two positions fill</td><td class="num">+$10</td></tr>
+      <tr><td>Next four positions fill</td><td class="num">+$20</td></tr>
+      <tr class="hi"><td><strong>Board complete, first rollover</strong></td><td class="num gold"><strong>$30 received</strong></td></tr>
+      <tr><td>Board clears and refills once more</td><td class="num">+$30</td></tr>
+      <tr class="hi"><td><strong>Total after two boards</strong></td><td class="num gold"><strong>$60 on a $20 entry</strong></td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:20px">Stage 2</h3>
+  <table>
+    <tbody>
+      <tr><td>Pays to enter</td><td class="num">$60</td></tr>
+      <tr><td>Each position pays</td><td class="num">$10</td></tr>
+      <tr><td>Board holds</td><td class="num">14 positions</td></tr>
+      <tr class="hi"><td><strong>Board complete</strong></td><td class="num gold"><strong>$140 received</strong></td></tr>
+      <tr><td>Five rollovers</td><td class="num gold">$700</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Being honest about this.</strong> These figures assume boards actually
+    fill. A board fills when people keep joining. If activity slows, boards fill
+    slowly or stop filling, and earnings slow with them. Nobody can promise you a
+    full board.
+  </div>
+
+  <h3 style="margin-top:18px">What you can rely on</h3>
+  <p>The rate is fixed and public. Stage 2 pays <span class="mono">$10</span> per
+    position to whoever owns the board, every time, for everyone. It is written
+    into the contract and it is the same for every member. What varies is how fast
+    positions fill, not what you are paid for them.</p>
+
+  <div class="ptitle">NexaFlow / How you earn</div><div class="pnum">6</div>
+</section>
+
+<!-- ══════════════ 6. AWARDS + FAIRNESS ══════════════ -->
+<section class="page">
+  <div class="eyebrow">Awards</div>
+  <h2>Rollover milestones</h2>
+  <div class="rule"></div>
+
+  <p>On Stage 2 and above, every <strong>five rollovers</strong> unlocks an award
+    on top of your normal board earnings. Awards repeat. Ten rollovers unlocks two,
+    fifteen unlocks three, and so on. Surplus carries forward, so nothing is lost
+    by passing a milestone before it is paid.</p>
+
+  <p>Stage 1 has no award. It is the entry stage.</p>
+
+  <div class="note">
+    <strong>Awards are capped against your own earnings.</strong> An award can
+    never exceed a set share of what your board actually generated. This is
+    deliberate. It stops anyone gaming the milestone by filling their own board
+    with wallets they control, because doing that costs them more than the award
+    returns.
+  </div>
+
+  <div class="eyebrow" style="margin-top:26px">Fairness</div>
+  <h2>The rules are the same for everyone</h2>
+  <div class="rule"></div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h3>Fixed rates</h3>
+      <p style="margin:0;font-size:9.5pt">Every position on a Stage 2 board pays
+        $10. Not more for early members, not less for late ones.</p>
+    </div>
+    <div class="panel">
+      <h3>Paid immediately</h3>
+      <p style="margin:0;font-size:9.5pt">Money reaches your wallet in the same
+        transaction. The system never holds your earnings.</p>
+    </div>
+    <div class="panel">
+      <h3>Placement is automatic</h3>
+      <p style="margin:0;font-size:9.5pt">Where a new member lands is decided by
+        the contract, not by an administrator deciding who gets a good spot.</p>
+    </div>
+    <div class="panel">
+      <h3>Nothing hidden</h3>
+      <p style="margin:0;font-size:9.5pt">Fees, board sizes and payment rates are
+        public and checkable on chain by anyone.</p>
+    </div>
+  </div>
+
+  <div class="ptitle">NexaFlow / How you earn</div><div class="pnum">7</div>
+</section>
+
+<!-- ══════════════ 7. RISK ══════════════ -->
+<section class="page">
+  <div class="eyebrow">Before you join</div>
+  <h2>What to understand</h2>
+  <div class="rule"></div>
+
+  <p class="lead">A clear explanation of the risks matters more than an optimistic
+    one. Read this part properly.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="n">1</div>
+      <div><h3>Your earnings depend on other people joining</h3>
+        <p style="margin:0">Positions on your board are filled by new members. If
+          new members stop arriving, your board stops filling and your earnings
+          stop with it. This is the single biggest thing to understand.</p></div>
+    </div>
+    <div class="step">
+      <div class="n">2</div>
+      <div><h3>A full board is not guaranteed</h3>
+        <p style="margin:0">Every figure in this document describes a board that
+          fills completely. Yours may fill slowly, partly, or not at all.</p></div>
+    </div>
+    <div class="step">
+      <div class="n">3</div>
+      <div><h3>Entry fees are not refundable</h3>
+        <p style="margin:0">Once you pay to enter a stage, that fee has been
+          distributed. There is no withdrawal of your entry.</p></div>
+    </div>
+    <div class="step">
+      <div class="n">4</div>
+      <div><h3>Later stages cost meaningfully more</h3>
+        <p style="margin:0">Stage 6 costs $4,860 to enter. Only commit what you can
+          afford to lose.</p></div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:24px">
+    <strong>This document is an explanation, not advice.</strong> It describes how
+    the mechanism works. It is not a prediction of what you will earn and it is not
+    financial advice. Make your own decision.
+  </div>
+
+  <div style="margin-top:auto"></div>
+  <div class="panel" style="margin-top:30px;text-align:center;background:#0B0E11;border:none">
+    <div class="brand" style="justify-content:center;margin-bottom:6px">
+      <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+        <path d="M6 26 C6 18, 16 18, 16 10 M26 26 C26 18, 16 18, 16 10"
+              stroke="#F0B90B" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="16" cy="7" r="4" fill="#FCD535"/>
+      </svg>
+      <span style="color:#fff">Nexa<span class="g" style="color:#F0B90B">Flow</span></span>
+    </div>
+    <div style="color:#6B7480;font-size:9pt">Every position pays you back</div>
+  </div>
+
+  <div class="ptitle">NexaFlow / How you earn</div><div class="pnum">8</div>
+</section>
+
+</body>
+</html>

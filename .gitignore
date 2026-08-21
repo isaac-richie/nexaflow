@@ -1,0 +1,30 @@
+# ── Foundry ─────────────────────────────────────────────
+out/
+cache/
+broadcast/*/dry-run/
+crytic-export/
+corpus/
+
+# Secrets never commit; the templates always do.
+# Note the two negations: `!.env.*.example` alone does NOT rescue a plain
+# `.env.example`, because that pattern needs a middle segment.
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Root package.json only proxies scripts to web/ and has no deps,
+# but guard against a stray install creating one.
+node_modules/
+
+# ── Frontend (web/) ─────────────────────────────────────
+web/node_modules/
+web/.next/
+web/out/
+web/tsconfig.tsbuildinfo
+
+# ── Keeper ──────────────────────────────────────────────
+keeper/node_modules/
+
+# ── OS / editor ─────────────────────────────────────────
+.DS_Store
