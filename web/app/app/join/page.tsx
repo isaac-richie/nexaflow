@@ -39,7 +39,7 @@ import { formatToken, shortAddress } from "@/lib/format";
 export default function JoinPage() {
   const { address: connectedAddress, isConnected } = useAccount();
   const { isRegistered, isLoading: memberLoading, refetch: refetchMember } = useMember();
-  const { isOpen, isLoading: openLoading } = useProtocolOpen();
+  const { anchor: protocolRoot, isOpen, isLoading: openLoading } = useProtocolOpen();
   const { isStale: priceStale, isLoading: priceLoading } = useOraclePriceHealth();
   const { config } = useStageConfig(0);
   const { quote, refetch: refetchQuote } = useStagePaymentQuote(0);
@@ -52,6 +52,13 @@ export default function JoinPage() {
     Boolean(connectedAddress) &&
     sponsor.toLowerCase() === connectedAddress?.toLowerCase();
   const sponsorUsable = sponsorValid && !sponsorIsSelf;
+  const noSponsor = !sponsor.trim();
+  const effectiveSponsor = sponsorUsable
+    ? (getAddress(sponsor) as `0x${string}`)
+    : noSponsor && protocolRoot
+      ? protocolRoot
+      : undefined;
+  const usingProtocolRoot = noSponsor && Boolean(effectiveSponsor);
   const referralStorageKey = `nexaflow:sponsor:${ACTIVE_CHAIN.id}:${MEMBERSHIP_ADDRESS.toLowerCase()}`;
 
   const {
@@ -61,7 +68,7 @@ export default function JoinPage() {
     error: slotError,
     refetch: refetchPlacement,
   } = usePlacementSlot(
-    sponsorUsable ? (sponsor as `0x${string}`) : undefined,
+    effectiveSponsor,
     0,
   );
 
@@ -135,7 +142,7 @@ export default function JoinPage() {
     const freshPlacement = placementResult.data as
       | readonly [`0x${string}`, number]
       | undefined;
-    if (!freshQuote || !freshPlacement || !sponsorUsable) return;
+    if (!freshQuote || !freshPlacement || !effectiveSponsor) return;
 
     // A lower token price can make an earlier exact approval insufficient.
     // Re-approve the new exact amount rather than submitting a doomed join.
@@ -144,7 +151,7 @@ export default function JoinPage() {
       return;
     }
     await join.register(
-      getAddress(sponsor),
+      effectiveSponsor,
       freshPlacement[0],
       freshPlacement[1],
       freshQuote[0],
@@ -180,7 +187,7 @@ export default function JoinPage() {
 
   const needsApproval = fee !== undefined && join.needsApproval(fee);
   const canAfford = fee !== undefined && join.hasBalance(fee);
-  const ready = sponsorUsable && Boolean(parent) && fee !== undefined;
+  const ready = Boolean(effectiveSponsor) && Boolean(parent) && fee !== undefined;
   const busy = join.isSigning || join.isConfirming;
 
   return (
@@ -191,18 +198,19 @@ export default function JoinPage() {
             Step 1 &middot; Your sponsor
           </h2>
           <p className="mt-1 text-sm text-muted">
-            The wallet address of the member who referred you. Your position is
-            placed inside their network.
+            Add the wallet of the member who referred you. If you came alone,
+            leave this blank and you will enter under the protocol root, then
+            build your own tree from your own referral link.
           </p>
 
           <label htmlFor="sponsor" className="label mt-5 block">
-            Sponsor address
+            Sponsor address <span className="text-faint">(optional)</span>
           </label>
           <input
             id="sponsor"
             value={sponsor}
             onChange={(e) => setSponsor(e.target.value.trim())}
-            placeholder="0x…"
+            placeholder="Leave blank to start fresh under protocol root"
             spellCheck={false}
             autoComplete="off"
             disabled={busy}
@@ -220,6 +228,15 @@ export default function JoinPage() {
               Clear saved sponsor
             </button>
           )}
+          {usingProtocolRoot && (
+            <div className="mt-3 rounded-xl border border-gold/20 bg-gold/8 p-3 text-sm text-muted">
+              No sponsor selected. You will start under the protocol root{" "}
+              <span className="font-mono text-ink">
+                {shortAddress(effectiveSponsor, 6)}
+              </span>
+              . After joining, your own referral link starts your tree.
+            </div>
+          )}
           {sponsor && !sponsorValid && (
             <p className="mt-2 text-sm text-down">
               That is not a valid wallet address.
@@ -232,7 +249,7 @@ export default function JoinPage() {
             </p>
           )}
 
-          {sponsorValid && (
+          {effectiveSponsor && (
             <div className="mt-4 rounded-xl border border-line bg-surface-2 p-4">
               <div className="label">Step 2 &middot; Your position</div>
               {slotLoading && (

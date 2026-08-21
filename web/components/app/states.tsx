@@ -182,8 +182,8 @@ export function NotRegisteredNotice() {
         This wallet is not a member yet
       </h2>
       <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-muted">
-        You need a sponsor&rsquo;s referral to join. Once you register at Stage 1
-        your board opens and this dashboard fills in.
+        Join with a sponsor link, or start fresh under the protocol root. Once
+        you register at Stage 1, your board opens and this dashboard fills in.
       </p>
       <a href="/app/join" className="btn-gold mt-5 inline-flex px-5 py-2.5 text-sm">
         Join NexaFlow
