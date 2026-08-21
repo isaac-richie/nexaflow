@@ -167,3 +167,127 @@ body {
 
 /* Respect the notch and home indicator on iOS. */
 .safe-x { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+
+/* ───────────── Background effects ───────────── */
+
+.bg-fx {
+  background: hsl(var(--bg));
+}
+
+/* Gradient orbs — large soft blurs that drift slowly. */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  will-change: transform;
+}
+
+.orb-gold {
+  width: min(700px, 80vw);
+  height: min(700px, 80vw);
+  top: -15%;
+  right: -10%;
+  background: radial-gradient(circle, hsl(var(--gold) / 0.18) 0%, hsl(var(--gold) / 0.06) 40%, transparent 70%);
+  animation: drift-a 22s ease-in-out infinite alternate;
+}
+
+.orb-blue {
+  width: min(600px, 70vw);
+  height: min(600px, 70vw);
+  bottom: -8%;
+  left: -12%;
+  background: radial-gradient(circle, hsl(220 70% 45% / 0.12) 0%, hsl(220 60% 40% / 0.04) 40%, transparent 70%);
+  animation: drift-b 26s ease-in-out infinite alternate;
+}
+
+.orb-accent {
+  width: min(400px, 50vw);
+  height: min(400px, 50vw);
+  top: 40%;
+  left: 50%;
+  background: radial-gradient(circle, hsl(var(--gold) / 0.12) 0%, hsl(var(--gold) / 0.03) 45%, transparent 70%);
+  animation: drift-c 18s ease-in-out infinite alternate;
+}
+
+@keyframes drift-a {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-60px, 40px) scale(1.15); }
+}
+@keyframes drift-b {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(50px, -30px) scale(1.1); }
+}
+@keyframes drift-c {
+  0%   { transform: translate(-50%, 0) scale(1); }
+  100% { transform: translate(calc(-50% + 40px), -50px) scale(1.2); }
+}
+
+/* Slow diagonal shimmer — a faint gold band that sweeps across the viewport. */
+.bg-fx::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    hsl(var(--gold) / 0.04) 40%,
+    hsl(var(--gold) / 0.07) 50%,
+    hsl(var(--gold) / 0.04) 60%,
+    transparent 80%
+  );
+  background-size: 200% 200%;
+  animation: shimmer-sweep 12s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer-sweep {
+  0%   { background-position: 100% 0%; }
+  100% { background-position: 0% 100%; }
+}
+
+/* Noise texture — gives surfaces a film-grain feel. */
+.noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* Floating particles — tiny dots that rise slowly. */
+.particles {
+  position: absolute;
+  inset: 0;
+}
+
+.dot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: hsl(var(--gold) / 0.45);
+  box-shadow: 0 0 6px 1px hsl(var(--gold) / 0.15);
+  animation: particle-float var(--d) ease-in-out var(--del) infinite;
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-28px) scale(1.5);
+    opacity: 0.75;
+  }
+}
+
+/* On mobile, tone down for perf. */
+@media (max-width: 639px) {
+  .orb { filter: blur(80px); }
+  .orb-gold  { width: 55vw; height: 55vw; }
+  .orb-blue  { width: 45vw; height: 45vw; }
+  .orb-accent { width: 30vw; height: 30vw; }
+  .dot:nth-child(n+17) { display: none; }
+}
