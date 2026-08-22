@@ -6,7 +6,7 @@ import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IER
 import {console2} from "forge-std/console2.sol";
 
 import {BinaryMembershipV1} from "../src/BinaryMembershipV1.sol";
-import {BinaryMembershipV2} from "../src/BinaryMembershipV2.sol";
+import {BinaryMembershipV3} from "../src/BinaryMembershipV3.sol";
 
 /// @title Admin calldata generator and verifier for BSC mainnet configuration
 /// @notice This script never broadcasts and never reads a private key. It
@@ -21,7 +21,7 @@ contract ConfigureBscMainnet is Script {
     address internal constant BSC_RWAAN = 0xACB921bf2Dac2F7E8E101AAd9CA013d6Af5C648a;
     uint256 internal constant BSC_MAINNET = 56;
     uint256 internal constant ACTION_COUNT = 5;
-    bytes32 internal constant ROLE_MANIFEST_DOMAIN = keccak256("BinaryMembershipV2:BSC_MAINNET:ROLE_MANIFEST:V2");
+    bytes32 internal constant ROLE_MANIFEST_DOMAIN = keccak256("BinaryMembershipV3:BSC_MAINNET:ROLE_MANIFEST:V3");
 
     struct SafeAction {
         address target;
@@ -31,7 +31,7 @@ contract ConfigureBscMainnet is Script {
 
     /// @notice Print and return the exact admin calls. Execute in this order.
     function printCalldata() external view returns (SafeAction[ACTION_COUNT] memory actions) {
-        BinaryMembershipV2 membership = _membership();
+        BinaryMembershipV3 membership = _membership();
         address admin = vm.envAddress("ADMIN_ADDRESS");
         address operator = vm.envAddress("OPERATOR_ADDRESS");
         address treasuryRole = vm.envAddress("TREASURY_ADDRESS");
@@ -91,7 +91,7 @@ contract ConfigureBscMainnet is Script {
     /// @notice Post-configuration audit. Reverts on the first mismatch.
     ///         Run immediately after configuration and before root enrollment.
     function verify() external view returns (bool) {
-        BinaryMembershipV2 membership = _membership();
+        BinaryMembershipV3 membership = _membership();
         address admin = vm.envAddress("ADMIN_ADDRESS");
         address operator = vm.envAddress("OPERATOR_ADDRESS");
         address treasuryRole = vm.envAddress("TREASURY_ADDRESS");
@@ -131,17 +131,17 @@ contract ConfigureBscMainnet is Script {
         return true;
     }
 
-    function _membership() internal view returns (BinaryMembershipV2 membership) {
+    function _membership() internal view returns (BinaryMembershipV3 membership) {
         require(block.chainid == BSC_MAINNET, "not BSC mainnet (expected chain 56)");
         address membershipAddress = vm.envAddress("MEMBERSHIP_ADDRESS");
         address expectedAddress = vm.envAddress("EXPECTED_MEMBERSHIP_ADDRESS");
         require(membershipAddress == expectedAddress, "membership does not match expected address");
         require(membershipAddress.code.length > 0, "membership has no code");
-        membership = BinaryMembershipV2(membershipAddress);
+        membership = BinaryMembershipV3(membershipAddress);
     }
 
     function _assertDeploymentState(
-        BinaryMembershipV2 membership,
+        BinaryMembershipV3 membership,
         address admin,
         address operator,
         address treasuryRole,

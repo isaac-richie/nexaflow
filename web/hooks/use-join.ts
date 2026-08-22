@@ -24,7 +24,8 @@ export type JoinStep = "idle" | "approving" | "joining" | "done";
 export type JoinAction = "approve" | "register" | "joinStage";
 
 /**
- * The two-transaction join flow: approve the payment token, then register.
+ * The two-transaction join flow: approve the payment token, then enter a
+ * selected stage.
  *
  * Deliberately does NOT approve `maxUint256` by default. An unlimited approval
  * to any contract is a standing permission that survives long after the user
@@ -113,8 +114,9 @@ export function useJoin() {
     [writeContractAsync],
   );
 
-  const register = useCallback(
+  const registerAtStage = useCallback(
     async (
+      stageId: number,
       sponsor: `0x${string}`,
       parent: `0x${string}`,
       side: number,
@@ -124,8 +126,9 @@ export function useJoin() {
       return writeContractAsync({
         address: MEMBERSHIP_ADDRESS,
         abi: BINARY_MEMBERSHIP_ABI,
-        functionName: "registerWithMaxPayment",
+        functionName: "registerAtStageWithMaxPayment",
         args: [
+          BigInt(stageId),
           sponsor,
           parent,
           side,
@@ -148,7 +151,7 @@ export function useJoin() {
       return writeContractAsync({
         address: MEMBERSHIP_ADDRESS,
         abi: BINARY_MEMBERSHIP_ABI,
-        functionName: "joinStageWithMaxPayment",
+        functionName: "joinAnyStageWithMaxPayment",
         args: [
           BigInt(stageId),
           parent,
@@ -186,7 +189,7 @@ export function useJoin() {
 
   return {
     approve,
-    register,
+    registerAtStage,
     joinStage,
     needsApproval,
     hasBalance,

@@ -5,13 +5,13 @@ import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IER
 import {console2} from "forge-std/console2.sol";
 
 import {BinaryMembershipV1} from "../src/BinaryMembershipV1.sol";
-import {BinaryMembershipV2} from "../src/BinaryMembershipV2.sol";
+import {BinaryMembershipV3} from "../src/BinaryMembershipV3.sol";
 import {MockAssetUsdPriceOracle} from "../src/MockAssetUsdPriceOracle.sol";
 import {MockRWAAN18} from "../src/MockRWAAN18.sol";
 import {BscTestnetActors} from "./BscTestnetActors.sol";
 
 contract DeployBscTestnet is BscTestnetActors {
-    function run() external returns (MockRWAAN18 token, BinaryMembershipV2 membership) {
+    function run() external returns (MockRWAAN18 token, BinaryMembershipV3 membership) {
         _requireSupportedChain();
 
         uint256 deployerKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
@@ -30,7 +30,7 @@ contract DeployBscTestnet is BscTestnetActors {
         token = new MockRWAAN18(admin);
         MockAssetUsdPriceOracle oracle = new MockAssetUsdPriceOracle(1 ether);
         membership =
-            new BinaryMembershipV2(IERC20Metadata(address(token)), oracle, 2 hours, treasury, company, admin, 0, root);
+            new BinaryMembershipV3(IERC20Metadata(address(token)), oracle, 2 hours, treasury, company, admin, 0, root);
         membership.grantRole(membership.OPERATOR_ROLE(), operator);
         membership.grantRole(membership.TREASURY_ROLE(), treasury);
         membership.grantRole(membership.PAUSER_ROLE(), pauser);

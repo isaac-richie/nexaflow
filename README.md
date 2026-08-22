@@ -58,8 +58,9 @@ Your board is the `treeDepth` levels beneath you: 6 positions at stage 0,
 board begins. Accumulate enough rollovers at a stage and you
 qualify for a physical award, which an operator grants.
 
-Six stages exist, each with a higher fee and a higher per-placement payout.
-Advancing requires completing the previous stage.
+Six stages exist, each with a higher fee and a higher per-placement payout. A
+member may start at any stage that fits their budget, then add any other stage
+later; stages are independent boards.
 
 **Key properties**
 
@@ -288,10 +289,11 @@ detached board can therefore keep earning and rolling, but cannot pay, credit or
 roll the former ancestor. The guard adds bounded path-validation gas and still
 rejects actual reciprocal cycles and over-deep intact paths.
 
-### 4.4 Stage progression
+### 4.4 Independent stage entry
 
-To join stage N you must already be enrolled at stage N−1. Enforced by
-`PreviousStageRequired`.
+V3 lets a new member select any stage as their first board, and lets an
+existing member add any stage they have not already joined. There is no
+previous-stage requirement for these V3 entrypoints.
 
 Each stage needs a tree root, established by an operator calling
 `enrollStageRoot(member, stageId)` — no fee, no parent. Everyone else pays and
@@ -299,7 +301,7 @@ places normally.
 
 > **`enrollStageRoot` is a real operator privilege, not a formality.** It is not
 > restricted to the system root: any registered member who has completed the
-> previous stage can be enrolled by it, and a stage may have several roots each
+> preceding stage can be enrolled by it, and a stage may have several roots each
 > owning an independent board. The enrolled member **skips that stage's fee
 > entirely** — $7,260 across stages 1–5 — and still earns from everyone placed
 > beneath them. This is how a stage gets seeded, so it is deliberate, but it
@@ -398,9 +400,9 @@ pause the protocol; see [SECURITY-NOTES §8](./SECURITY-NOTES.md#8-not-covered-b
 
 | Function | Description |
 |---|---|
-| `register(address(0), address(0), Side.None)` | Free registration for the immutable designated root only. Paid V2 callers are rejected by this legacy ABI. |
-| `registerWithMaxPayment(sponsor, parent, side, maximumPayment, deadline)` | Join stage 0 with an on-chain cap on the RWAAN debit and expiry time. |
-| `joinStageWithMaxPayment(stageId, parent, side, maximumPayment, deadline)` | Join stage 1–5 with an on-chain cap and expiry time. Requires enrollment in the previous stage. |
+| `register(address(0), address(0), Side.None)` | Free registration for the immutable designated root only. Paid callers are rejected by this legacy ABI. |
+| `registerAtStageWithMaxPayment(stageId, sponsor, parent, side, maximumPayment, deadline)` | Register a new wallet directly into any selected stage, with an on-chain cap on the RWAAN debit and expiry time. |
+| `joinAnyStageWithMaxPayment(stageId, parent, side, maximumPayment, deadline)` | Add any stage the member has not already joined, with an on-chain payment cap and expiry time. |
 
 ### Views (no indexer needed)
 
@@ -528,8 +530,8 @@ Registration flow:
 1. quoteStagePayment(stage)                     → (RWAAN fee, reward, price, updatedAt)
 2. approve(membershipAddress, RWAAN fee)         on RWAAN
 3. findPlacementSlot(sponsorAddress, stage)      → (parent, side)
-4. registerWithMaxPayment(sponsor, parent, side, quotedFee, deadline)
-   // use joinStageWithMaxPayment for stage > 0
+4. registerAtStageWithMaxPayment(stage, sponsor, parent, side, quotedFee, deadline)
+   // existing members use joinAnyStageWithMaxPayment
 ```
 
 Approve and pass the exact quoted fee as `maximumPayment`, together with a short

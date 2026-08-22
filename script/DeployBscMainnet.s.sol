@@ -5,7 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {console2} from "forge-std/console2.sol";
 
-import {BinaryMembershipV2} from "../src/BinaryMembershipV2.sol";
+import {BinaryMembershipV3} from "../src/BinaryMembershipV3.sol";
 import {IAssetUsdPriceOracle} from "../src/interfaces/IAssetUsdPriceOracle.sol";
 import {PancakeV2RwaanUsdOracle} from "../src/PancakeV2RwaanUsdOracle.sol";
 
@@ -84,14 +84,14 @@ contract DeployBscMainnet is Script {
 
     /// @dev Source-controlled so changing an environment variable cannot create
     ///      another plausible deployment. Bump the version only through review.
-    bytes32 internal constant DEPLOY_SALT = keccak256("BinaryMembershipV2:BSC_MAINNET:RWAAN:V2");
+    bytes32 internal constant DEPLOY_SALT = keccak256("BinaryMembershipV3:BSC_MAINNET:RWAAN:V3");
 
     /// @dev Commits every privileged/economic address, including the operator
     ///      and pauser that are granted only after deployment. The CREATE2
     ///      address alone cannot commit those two post-construction roles.
-    bytes32 internal constant ROLE_MANIFEST_DOMAIN = keccak256("BinaryMembershipV2:BSC_MAINNET:ROLE_MANIFEST:V2");
+    bytes32 internal constant ROLE_MANIFEST_DOMAIN = keccak256("BinaryMembershipV3:BSC_MAINNET:ROLE_MANIFEST:V3");
 
-    function run() external returns (BinaryMembershipV2 membership) {
+    function run() external returns (BinaryMembershipV3 membership) {
         require(block.chainid == BSC_MAINNET, "not BSC mainnet (expected chain 56)");
 
         uint256 deployerKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
@@ -153,9 +153,9 @@ contract DeployBscMainnet is Script {
         IAssetUsdPriceOracle oracle,
         uint256 maxPriceAge,
         DeploymentInputs memory inputs
-    ) internal returns (BinaryMembershipV2 membership) {
+    ) internal returns (BinaryMembershipV3 membership) {
         vm.startBroadcast(deployerKey);
-        membership = new BinaryMembershipV2{salt: DEPLOY_SALT}(
+        membership = new BinaryMembershipV3{salt: DEPLOY_SALT}(
             token, oracle, maxPriceAge, inputs.treasury, inputs.company, inputs.admin, inputs.adminDelay, inputs.root
         );
         vm.stopBroadcast();
@@ -328,7 +328,7 @@ contract DeployBscMainnet is Script {
     }
 
     function _logDeployment(
-        BinaryMembershipV2 membership,
+        BinaryMembershipV3 membership,
         IERC20Metadata token,
         IAssetUsdPriceOracle oracle,
         DeploymentInputs memory inputs,
@@ -377,7 +377,7 @@ contract DeployBscMainnet is Script {
     {
         bytes32 initCodeHash = keccak256(
             abi.encodePacked(
-                type(BinaryMembershipV2).creationCode,
+                type(BinaryMembershipV3).creationCode,
                 abi.encode(
                     IERC20Metadata(token),
                     IAssetUsdPriceOracle(oracle),

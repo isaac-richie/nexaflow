@@ -1,5 +1,5 @@
 // GENERATED FILE - do not edit by hand.
-// Source: out/BinaryMembershipV2.sol/BinaryMembershipV2.json
+// Source: out/BinaryMembershipV3.sol/BinaryMembershipV3.json
 // Regenerate: forge build && npm --prefix web run gen:abi
 
 export const BINARY_MEMBERSHIP_ABI = [
@@ -937,6 +937,39 @@ export const BINARY_MEMBERSHIP_ABI = [
   },
   {
     "type": "function",
+    "name": "joinAnyStageWithMaxPayment",
+    "inputs": [
+      {
+        "name": "stageId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "parent",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "side",
+        "type": "uint8",
+        "internalType": "enum BinaryMembershipV1.Side"
+      },
+      {
+        "name": "maximumPayment",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "joinStage",
     "inputs": [
       {
@@ -1216,6 +1249,44 @@ export const BINARY_MEMBERSHIP_ABI = [
         "name": "side",
         "type": "uint8",
         "internalType": "enum BinaryMembershipV1.Side"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "registerAtStageWithMaxPayment",
+    "inputs": [
+      {
+        "name": "stageId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "sponsor",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "parent",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "side",
+        "type": "uint8",
+        "internalType": "enum BinaryMembershipV1.Side"
+      },
+      {
+        "name": "maximumPayment",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "outputs": [],
@@ -2571,6 +2642,11 @@ export const BINARY_MEMBERSHIP_ABI = [
         "internalType": "uint256"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "RootMustStartAtStageOne",
+    "inputs": []
   },
   {
     "type": "error",

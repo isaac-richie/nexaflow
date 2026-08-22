@@ -5,7 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 import {BinaryMembershipV1} from "../src/BinaryMembershipV1.sol";
-import {BinaryMembershipV2} from "../src/BinaryMembershipV2.sol";
+import {BinaryMembershipV3} from "../src/BinaryMembershipV3.sol";
 import {MockAssetUsdPriceOracle} from "../src/MockAssetUsdPriceOracle.sol";
 import {ConfigureBscMainnet} from "../script/ConfigureBscMainnet.s.sol";
 
@@ -14,10 +14,10 @@ contract BinaryMembershipV1MainnetConfigurationTest is Test {
     address internal constant TREASURY = address(0x2002);
     address internal constant COMPANY = address(0x2003);
     address internal constant ROOT = address(0x2004);
-    bytes32 internal constant ROLE_MANIFEST_DOMAIN = keccak256("BinaryMembershipV2:BSC_MAINNET:ROLE_MANIFEST:V2");
+    bytes32 internal constant ROLE_MANIFEST_DOMAIN = keccak256("BinaryMembershipV3:BSC_MAINNET:ROLE_MANIFEST:V3");
 
     ConfigureBscMainnet internal configurator;
-    BinaryMembershipV2 internal membership;
+    BinaryMembershipV3 internal membership;
     MockAssetUsdPriceOracle internal oracle;
 
     function setUp() public {
@@ -26,7 +26,7 @@ contract BinaryMembershipV1MainnetConfigurationTest is Test {
         vm.mockCall(BSC_RWAAN, abi.encodeWithSignature("balanceOf(address)", address(0)), abi.encode(uint256(0)));
 
         oracle = new MockAssetUsdPriceOracle(0.0001 ether);
-        membership = new BinaryMembershipV2(
+        membership = new BinaryMembershipV3(
             IERC20Metadata(BSC_RWAAN), oracle, 2 hours, TREASURY, COMPANY, address(this), uint48(10 minutes), ROOT
         );
         configurator = new ConfigureBscMainnet();

@@ -21,7 +21,7 @@ const repoRoot = resolve(here, "..", "..");
 
 const ARTIFACT = resolve(
   repoRoot,
-  "out/BinaryMembershipV2.sol/BinaryMembershipV2.json",
+  "out/BinaryMembershipV3.sol/BinaryMembershipV3.json",
 );
 const OUT = resolve(here, "..", "lib/contracts/binaryMembershipAbi.ts");
 
@@ -48,8 +48,8 @@ const counts = abi.reduce((acc, e) => {
 // Sanity check: the frontend calls these by name. If the contract renames one,
 // fail here rather than shipping a build that reverts in a member's wallet.
 const REQUIRED = [
-  "registerWithMaxPayment",
-  "joinStageWithMaxPayment",
+  "registerAtStageWithMaxPayment",
+  "joinAnyStageWithMaxPayment",
   "findPlacementSlot",
   "getMember",
   "getStageMembership",
@@ -66,7 +66,7 @@ if (missing.length) {
 }
 
 const header = `// GENERATED FILE - do not edit by hand.
-// Source: out/BinaryMembershipV2.sol/BinaryMembershipV2.json
+// Source: out/BinaryMembershipV3.sol/BinaryMembershipV3.json
 // Regenerate: forge build && npm --prefix web run gen:abi
 
 export const BINARY_MEMBERSHIP_ABI = `;
