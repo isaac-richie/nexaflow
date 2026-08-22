@@ -71,6 +71,11 @@ export default function JoinPage() {
 
   const [sponsor, setSponsor] = useState("");
   const [selectedStage, setSelectedStage] = useState<number>();
+  const [submittedStageId, setSubmittedStageId] = useState<number>();
+  const [successToast, setSuccessToast] = useState<{
+    title: string;
+    message: string;
+  }>();
   const referralHydrated = useRef(false);
   const sponsorValid = isAddress(sponsor);
   const sponsorIsSelf =
@@ -163,11 +168,25 @@ export default function JoinPage() {
       if (join.action === "approve") join.refetchAllowance();
       if (join.action === "register") refetchMember();
       if (join.action === "register" || join.action === "joinStage") {
+        const stageLabel = STAGE_PRESETS[submittedStageId ?? stageId].label;
+        setSuccessToast({
+          title: join.action === "register" ? "Welcome to NexaFlow" : `${stageLabel} joined`,
+          message:
+            join.action === "register"
+              ? `${stageLabel} is now open. Your referral link is ready to build your tree.`
+              : `Your ${stageLabel} board is now open and ready to receive positions.`,
+        });
         refetchStages();
         setSelectedStage(undefined);
       }
     }
   }, [join.isConfirmed]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!successToast) return;
+    const timeout = window.setTimeout(() => setSuccessToast(undefined), 8_000);
+    return () => window.clearTimeout(timeout);
+  }, [successToast]);
 
   async function approveFreshQuote() {
     const result = await refetchQuote();
@@ -198,6 +217,7 @@ export default function JoinPage() {
       return;
     }
     if (isRegistered) {
+      setSubmittedStageId(stageId);
       await join.joinStage(
         stageId,
         freshPlacement[0],
@@ -205,6 +225,7 @@ export default function JoinPage() {
         freshMaximumPayment,
       );
     } else if (effectiveSponsor) {
+      setSubmittedStageId(stageId);
       await join.registerAtStage(
         stageId,
         effectiveSponsor,
@@ -237,6 +258,33 @@ export default function JoinPage() {
   );
   return (
     <Shell>
+      {successToast && (
+        <div
+          role="status"
+          className="fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-up/30 bg-surface-2 p-4 shadow-2xl shadow-black/40"
+        >
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-up/15 text-xs font-bold text-up">
+              ✓
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-sm font-semibold text-ink">{successToast.title}</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted">{successToast.message}</p>
+              <a href="/app/board" className="mt-2 inline-block text-xs font-medium text-gold hover:underline">
+                View my board →
+              </a>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSuccessToast(undefined)}
+              aria-label="Dismiss success message"
+              className="text-muted transition-colors hover:text-ink"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="panel panel-sheen p-5 sm:p-6">
           {!isRegistered && (
