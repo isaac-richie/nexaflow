@@ -264,7 +264,7 @@ contract BinaryMembershipV1MainnetDeployGuardsTest is Test {
     }
 
     function test_Guard_DeploymentSaltIsSourceControlled() public view {
-        assertEq(g.deploymentSalt(), keccak256("BinaryMembershipV3:BSC_MAINNET:RWAAN:V3"));
+        assertEq(g.deploymentSalt(), keccak256("BinaryMembershipV4:BSC_MAINNET:USDT:V4"));
     }
 
     function test_Guard_RoleManifestCommitsAllRoleInputs() public {

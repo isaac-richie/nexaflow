@@ -1,7 +1,12 @@
 "use client";
 
 import { useAccount } from "wagmi";
-import { IS_DEPLOYED, STAGE_PRESETS, stageLabel } from "@/lib/contracts/config";
+import {
+  IS_DEPLOYED,
+  PAYMENT_TOKEN_SYMBOL,
+  STAGE_PRESETS,
+  stageLabel,
+} from "@/lib/contracts/config";
 import {
   useAllStageMemberships,
   useAwardInfo,
@@ -50,7 +55,7 @@ export default function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Stat
               label="Total earned"
-              value={`${formatToken(member?.totalEarned)} RWAAN`}
+              value={`${formatToken(member?.totalEarned)} ${PAYMENT_TOKEN_SYMBOL}`}
               accent
             />
             <Stat label="Current stage" value={stageLabel(currentStage)} />
@@ -106,7 +111,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="text-right">
                         <div className="figure text-sm">
-                          {formatToken(s?.stageEarnings)} RWAAN
+                          {formatToken(s?.stageEarnings)} {PAYMENT_TOKEN_SYMBOL}
                         </div>
                         <div className="text-[11px] text-faint">earned</div>
                       </div>
@@ -144,12 +149,12 @@ export default function DashboardPage() {
             />
             <Stat
               label="Paid to members"
-              value={`${formatToken(stats.totalPoolPaid)} RWAAN`}
+              value={`${formatToken(stats.totalPoolPaid)} ${PAYMENT_TOKEN_SYMBOL}`}
               small
             />
             <Stat
               label="Treasury"
-              value={`${formatToken(stats.totalTreasuryPaid)} RWAAN`}
+              value={`${formatToken(stats.totalTreasuryPaid)} ${PAYMENT_TOKEN_SYMBOL}`}
               small
             />
           </section>

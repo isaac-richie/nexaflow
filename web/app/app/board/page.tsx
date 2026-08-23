@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { IS_DEPLOYED, STAGE_PRESETS, stageLabel } from "@/lib/contracts/config";
+import {
+  IS_DEPLOYED,
+  PAYMENT_TOKEN_SYMBOL,
+  STAGE_PRESETS,
+  stageLabel,
+} from "@/lib/contracts/config";
 import { useAllStageMemberships, useMember } from "@/hooks/use-membership";
 import {
   ConnectPrompt,
@@ -80,12 +85,12 @@ export default function BoardPage() {
               />
               <Cell
                 label="Earned here"
-                value={`${formatToken(membership.stageEarnings)} RWAAN`}
+                value={`${formatToken(membership.stageEarnings)} ${PAYMENT_TOKEN_SYMBOL}`}
                 accent
               />
               <Cell
                 label="Awarded"
-                value={`${formatToken(membership.totalAwarded)} RWAAN`}
+                value={`${formatToken(membership.totalAwarded)} ${PAYMENT_TOKEN_SYMBOL}`}
               />
 
               <div className="panel col-span-full p-5">

@@ -3,9 +3,10 @@ import { bsc, bscTestnet } from "wagmi/chains";
 /**
  * Contract + chain configuration.
  *
- * V2 pays in Rawli Analytics (RWAAN) at
- * 0xACB921bf2Dac2F7E8E101AAd9CA013d6Af5C648a. The membership address remains
- * environment-driven until the replacement deployment is complete.
+ * V4 pays fixed fees in canonical BSC USDT at
+ * 0x55d398326f99059fF775485246999027B3197955. The membership address remains
+ * environment-driven so a future audited redeployment is a configuration
+ * change rather than a source-code edit.
  *
  * Everything still reads from env rather than being hardcoded, so a redeploy or
  * a testnet build is a config change. The UI must never invent numbers when a
@@ -28,12 +29,15 @@ export const MEMBERSHIP_ADDRESS = (process.env
 export const PAYMENT_TOKEN_ADDRESS = (process.env
   .NEXT_PUBLIC_PAYMENT_TOKEN_ADDRESS ?? ZERO_ADDRESS) as `0x${string}`;
 
+export const PAYMENT_TOKEN_SYMBOL = "USDT";
+
 /**
  * True once a real membership address is configured. Every data hook checks
  * this before enabling a query — an unconfigured build should show an explicit
  * "not deployed" state, never fabricated zeroes.
  */
-export const IS_DEPLOYED = MEMBERSHIP_ADDRESS !== ZERO_ADDRESS;
+export const IS_DEPLOYED =
+  MEMBERSHIP_ADDRESS !== ZERO_ADDRESS && PAYMENT_TOKEN_ADDRESS !== ZERO_ADDRESS;
 
 /**
  * Stage presentation data.
@@ -42,9 +46,9 @@ export const IS_DEPLOYED = MEMBERSHIP_ADDRESS !== ZERO_ADDRESS;
  * (Stage 1-6). Getting this offset wrong is the easiest way to mislead someone
  * about what they are paying for, so the mapping lives in exactly one place.
  *
- * Fees and rewards here are for DISPLAY BEFORE CONNECTION only. Once a chain
+ * Fees and rewards here are for display before connection only. Once a chain
  * is reachable the UI reads `getStageConfig` and shows that instead — the
- * contract is the source of truth, since admin can retune fees at runtime.
+ * contract is the source of truth.
  */
 export type StagePreset = {
   stageId: number;

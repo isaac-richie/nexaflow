@@ -96,50 +96,6 @@ export function ProtocolNotOpenNotice() {
   );
 }
 
-/**
- * Pricing is temporarily unavailable.
- *
- * Entry amounts are quoted from a TWAP oracle that has to be advanced on a
- * schedule. When the last update is older than `maxPriceAge` the contract
- * refuses to quote, so no amount can be shown and no join can succeed. Saying
- * that plainly beats an empty form or a wallet-level revert, both of which
- * read as a broken product.
- */
-export function PriceUnavailableNotice() {
-  return (
-    <div className="panel p-6 sm:p-8">
-      <div className="flex items-start gap-4">
-        <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold/12">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <circle cx="12" cy="12" r="9" stroke="hsl(var(--gold))" strokeWidth="1.6" />
-            <path
-              d="M12 7.5v5l3 1.8"
-              stroke="hsl(var(--gold))"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
-        <div>
-          <h2 className="font-display text-lg font-semibold">
-            Pricing is refreshing
-          </h2>
-          <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-muted">
-            Entry amounts are quoted live in {" "}
-            <span className="text-ink">RWAAN</span> from an on-chain price
-            feed. That feed is between updates right now, so the contract will
-            not quote an amount, and joining is paused until it refreshes.
-          </p>
-          <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted">
-            Nothing is wrong with your wallet and no funds are affected. Check
-            back shortly.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function ConnectPrompt() {
   return (
     <div className="panel panel-sheen flex flex-col items-center p-10 text-center sm:p-14">

@@ -25,7 +25,7 @@ export type JoinAction = "approve" | "register" | "joinStage";
 
 /**
  * The two-transaction join flow: approve the payment token, then enter a
- * selected stage.
+ * next eligible stage.
  *
  * Deliberately does NOT approve `maxUint256` by default. An unlimited approval
  * to any contract is a standing permission that survives long after the user
@@ -114,27 +114,14 @@ export function useJoin() {
     [writeContractAsync],
   );
 
-  const registerAtStage = useCallback(
-    async (
-      stageId: number,
-      sponsor: `0x${string}`,
-      parent: `0x${string}`,
-      side: number,
-      maximumPayment: bigint,
-    ) => {
+  const register = useCallback(
+    async (sponsor: `0x${string}`, parent: `0x${string}`, side: number) => {
       setAction("register");
       return writeContractAsync({
         address: MEMBERSHIP_ADDRESS,
         abi: BINARY_MEMBERSHIP_ABI,
-        functionName: "registerAtStageWithMaxPayment",
-        args: [
-          BigInt(stageId),
-          sponsor,
-          parent,
-          side,
-          maximumPayment,
-          BigInt(Math.floor(Date.now() / 1000) + 20 * 60),
-        ],
+        functionName: "register",
+        args: [sponsor, parent, side],
       });
     },
     [writeContractAsync],
@@ -145,20 +132,13 @@ export function useJoin() {
       stageId: number,
       parent: `0x${string}`,
       side: number,
-      maximumPayment: bigint,
     ) => {
       setAction("joinStage");
       return writeContractAsync({
         address: MEMBERSHIP_ADDRESS,
         abi: BINARY_MEMBERSHIP_ABI,
-        functionName: "joinAnyStageWithMaxPayment",
-        args: [
-          BigInt(stageId),
-          parent,
-          side,
-          maximumPayment,
-          BigInt(Math.floor(Date.now() / 1000) + 20 * 60),
-        ],
+        functionName: "joinStage",
+        args: [BigInt(stageId), parent, side],
       });
     },
     [writeContractAsync],
@@ -189,7 +169,7 @@ export function useJoin() {
 
   return {
     approve,
-    registerAtStage,
+    register,
     joinStage,
     needsApproval,
     hasBalance,
@@ -197,7 +177,7 @@ export function useJoin() {
     allowance,
     balance,
     decimals: decimals ?? 18,
-    symbol: symbol ?? "RWAAN",
+    symbol: symbol ?? "USDT",
     hash,
     action,
     step,

@@ -1,5 +1,5 @@
 // GENERATED FILE - do not edit by hand.
-// Source: out/BinaryMembershipV3.sol/BinaryMembershipV3.json
+// Source: out/BinaryMembershipV4.sol/BinaryMembershipV4.json
 // Regenerate: forge build && npm --prefix web run gen:abi
 
 export const BINARY_MEMBERSHIP_ABI = [
@@ -9,17 +9,7 @@ export const BINARY_MEMBERSHIP_ABI = [
       {
         "name": "_asset",
         "type": "address",
-        "internalType": "contract IERC20Metadata"
-      },
-      {
-        "name": "_priceOracle",
-        "type": "address",
-        "internalType": "contract IAssetUsdPriceOracle"
-      },
-      {
-        "name": "_maxPriceAge",
-        "type": "uint256",
-        "internalType": "uint256"
+        "internalType": "contract IERC20"
       },
       {
         "name": "_treasury",
@@ -182,19 +172,6 @@ export const BINARY_MEMBERSHIP_ABI = [
         "name": "",
         "type": "address",
         "internalType": "contract IERC20"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "assetUnit",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -937,65 +914,9 @@ export const BINARY_MEMBERSHIP_ABI = [
   },
   {
     "type": "function",
-    "name": "joinAnyStageWithMaxPayment",
-    "inputs": [
-      {
-        "name": "stageId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "parent",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "side",
-        "type": "uint8",
-        "internalType": "enum BinaryMembershipV1.Side"
-      },
-      {
-        "name": "maximumPayment",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
     "name": "joinStage",
     "inputs": [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "",
-        "type": "uint8",
-        "internalType": "enum BinaryMembershipV1.Side"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "joinStageWithMaxPayment",
-    "inputs": [
-      {
         "name": "stageId",
         "type": "uint256",
         "internalType": "uint256"
@@ -1009,51 +930,10 @@ export const BINARY_MEMBERSHIP_ABI = [
         "name": "side",
         "type": "uint8",
         "internalType": "enum BinaryMembershipV1.Side"
-      },
-      {
-        "name": "maximumPayment",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "latestAssetPriceUsd",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "priceUsd18",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "updatedAt",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "maxPriceAge",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -1186,53 +1066,6 @@ export const BINARY_MEMBERSHIP_ABI = [
   },
   {
     "type": "function",
-    "name": "priceOracle",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "contract IAssetUsdPriceOracle"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "quoteStagePayment",
-    "inputs": [
-      {
-        "name": "stageId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "feeAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "rewardAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "priceUsd18",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "updatedAt",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "register",
     "inputs": [
       {
@@ -1249,77 +1082,6 @@ export const BINARY_MEMBERSHIP_ABI = [
         "name": "side",
         "type": "uint8",
         "internalType": "enum BinaryMembershipV1.Side"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "registerAtStageWithMaxPayment",
-    "inputs": [
-      {
-        "name": "stageId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "sponsor",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "parent",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "side",
-        "type": "uint8",
-        "internalType": "enum BinaryMembershipV1.Side"
-      },
-      {
-        "name": "maximumPayment",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "registerWithMaxPayment",
-    "inputs": [
-      {
-        "name": "sponsor",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "parent",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "side",
-        "type": "uint8",
-        "internalType": "enum BinaryMembershipV1.Side"
-      },
-      {
-        "name": "maximumPayment",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "outputs": [],
@@ -2422,22 +2184,6 @@ export const BINARY_MEMBERSHIP_ABI = [
   },
   {
     "type": "error",
-    "name": "FuturePrice",
-    "inputs": [
-      {
-        "name": "updatedAt",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "currentTimestamp",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ]
-  },
-  {
-    "type": "error",
     "name": "InsufficientPendingTreasury",
     "inputs": [
       {
@@ -2491,11 +2237,6 @@ export const BINARY_MEMBERSHIP_ABI = [
   },
   {
     "type": "error",
-    "name": "InvalidPrice",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "InvalidSide",
     "inputs": []
   },
@@ -2509,11 +2250,6 @@ export const BINARY_MEMBERSHIP_ABI = [
         "internalType": "uint256"
       }
     ]
-  },
-  {
-    "type": "error",
-    "name": "MaximumPaymentRequired",
-    "inputs": []
   },
   {
     "type": "error",
@@ -2645,11 +2381,6 @@ export const BINARY_MEMBERSHIP_ABI = [
   },
   {
     "type": "error",
-    "name": "RootMustStartAtStageOne",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "SafeCastOverflowedUintDowncast",
     "inputs": [
       {
@@ -2743,38 +2474,6 @@ export const BINARY_MEMBERSHIP_ABI = [
     "type": "error",
     "name": "StagesNotConfigured",
     "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "StalePrice",
-    "inputs": [
-      {
-        "name": "updatedAt",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "currentTimestamp",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "TransactionExpired",
-    "inputs": [
-      {
-        "name": "deadline",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "currentTimestamp",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ]
   },
   {
     "type": "error",
