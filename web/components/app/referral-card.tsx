@@ -71,33 +71,34 @@ export function ReferralCard({ address }: { address?: `0x${string}` }) {
   }
 
   return (
-    <section className="panel panel-sheen p-5 sm:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h2 className="font-display text-lg font-semibold">Invite your network</h2>
-          <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted">
-            Share this link. It permanently resolves to your wallet, so a browser
-            refresh or a copied message cannot silently change your sponsor.
+    <section className="panel panel-sheen p-4 sm:p-6">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="font-display text-base font-semibold sm:text-lg">Invite your network</h2>
+          <p className="mt-0.5 max-w-xl text-xs leading-relaxed text-muted sm:mt-1 sm:text-sm">
+            Share this link. It permanently resolves to your wallet.
           </p>
         </div>
-        <span className="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 font-mono text-xs text-gold">
-          {code}
+        <span className="shrink-0 rounded-full border border-gold/25 bg-gold/10 px-2.5 py-1 font-mono text-[10px] text-gold sm:px-3 sm:text-xs">
+          {code.slice(0, 8)}…
         </span>
       </div>
 
-      <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+      <div className="mt-4 flex flex-col gap-2 sm:mt-5 sm:flex-row">
         <input
           value={shareUrl || "Preparing link…"}
           readOnly
           aria-label="Referral link"
-          className="min-w-0 flex-1 rounded-xl border border-line bg-surface-2 px-3 py-2.5 font-mono text-xs text-muted"
+          className="min-w-0 flex-1 rounded-xl border border-line bg-surface-2 px-3 py-2.5 font-mono text-[11px] text-muted sm:text-xs"
         />
-        <button onClick={share} disabled={!shareUrl || sharing} className="btn-gold px-4 py-2.5 text-sm disabled:opacity-50">
-          {sharing ? "Opening…" : "Share link"}
-        </button>
-        <button onClick={() => copy("share", shareUrl)} disabled={!shareUrl} className="btn-ghost px-4 py-2.5 text-sm disabled:opacity-50">
-          {copied === "share" ? "Copied" : "Copy"}
-        </button>
+        <div className="flex gap-2">
+          <button onClick={share} disabled={!shareUrl || sharing} className="btn-gold flex-1 px-4 py-2.5 text-sm disabled:opacity-50 sm:flex-initial">
+            {sharing ? "Opening…" : "Share"}
+          </button>
+          <button onClick={() => copy("share", shareUrl)} disabled={!shareUrl} className="btn-ghost flex-1 px-4 py-2.5 text-sm disabled:opacity-50 sm:flex-initial">
+            {copied === "share" ? "Copied" : "Copy"}
+          </button>
+        </div>
       </div>
 
       <details className="mt-4 text-xs text-faint">

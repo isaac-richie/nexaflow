@@ -286,6 +286,127 @@ body {
   }
 }
 
+/* Stat card glow border */
+.stat-glow {
+  position: relative;
+  overflow: hidden;
+}
+.stat-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--gold) / 0.3) 0%,
+    transparent 40%,
+    transparent 60%,
+    hsl(var(--gold) / 0.15) 100%
+  );
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.stat-glow-accent::after {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--gold-hi) / 0.5) 0%,
+    hsl(var(--gold) / 0.3) 30%,
+    transparent 50%,
+    hsl(var(--gold) / 0.2) 100%
+  );
+}
+
+/* Shimmer sweep on stat values */
+@keyframes value-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.stat-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--gold)) 0%,
+    hsl(var(--gold-hi)) 40%,
+    hsl(45 100% 80%) 50%,
+    hsl(var(--gold-hi)) 60%,
+    hsl(var(--gold)) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: value-shimmer 4s ease-in-out infinite;
+}
+
+/* Shimmer skeleton loading */
+@keyframes shimmer-slide {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-bone {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--surface-2)) 25%,
+    hsl(var(--surface-3)) 50%,
+    hsl(var(--surface-2)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-slide 1.5s ease-in-out infinite;
+}
+
+/* Stage card hover lift */
+.stage-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.stage-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 24px -8px hsl(0 0% 0% / 0.5),
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.06);
+  border-color: hsl(var(--gold) / 0.25);
+}
+
+/* Horizontal stage scroll on mobile */
+.stage-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.stage-scroll::-webkit-scrollbar { display: none; }
+
+.stage-snap {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Active stage card glow */
+.stage-active {
+  border-color: hsl(var(--up) / 0.2);
+  background: linear-gradient(
+    180deg,
+    hsl(var(--up) / 0.04) 0%,
+    hsl(var(--surface-2) / 0.6) 100%
+  );
+}
+.stage-active::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(90deg, transparent, hsl(var(--up) / 0.6), transparent);
+}
+
 /* On mobile, tone down for perf. */
 @media (max-width: 639px) {
   .orb { filter: blur(80px); }
