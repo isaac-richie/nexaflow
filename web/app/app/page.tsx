@@ -74,7 +74,7 @@ export default function DashboardPage() {
             <StatCard
               label="Rollovers"
               rawValue={stages?.[currentStage]?.rolloverCount}
-              decimals={0}
+              isCount
             />
             <StatCard
               label="Next award"
@@ -267,7 +267,7 @@ export default function DashboardPage() {
 
           {/* ── Protocol stats (public only — no treasury) ── */}
           <section className="grid grid-cols-2 gap-3 sm:gap-4">
-            <MiniStat label="Members" rawValue={stats.memberCount} />
+            <MiniStat label="Members" rawValue={stats.memberCount} isCount />
             <MiniStat
               label="Paid to members"
               rawValue={stats.totalPoolPaid}
@@ -291,6 +291,7 @@ function StatCard({
   text,
   suffix = "",
   decimals = 2,
+  isCount,
   accent,
   hint,
 }: {
@@ -299,10 +300,15 @@ function StatCard({
   text?: string;
   suffix?: string;
   decimals?: number;
+  /** True for plain integer counts (rollovers, members) — do not divide by 1e18. */
+  isCount?: boolean;
   accent?: boolean;
   hint?: string;
 }) {
-  const num = rawValue != null ? toNum(rawValue) : undefined;
+  const num = rawValue != null
+    ? isCount ? Number(rawValue) : toNum(rawValue)
+    : undefined;
+  const displayDecimals = isCount ? 0 : decimals;
 
   return (
     <div className={`panel p-3 sm:p-5 ${accent ? "stat-glow stat-glow-accent" : "stat-glow"}`}>
@@ -315,7 +321,7 @@ function StatCard({
         {text != null ? (
           text
         ) : num != null ? (
-          <CountUp value={num} decimals={decimals} suffix={suffix} />
+          <CountUp value={num} decimals={displayDecimals} suffix={suffix} />
         ) : (
           "—"
         )}
@@ -337,13 +343,17 @@ function MiniStat({
   label,
   rawValue,
   suffix = "",
+  isCount,
 }: {
   label: string;
   rawValue?: bigint;
   suffix?: string;
+  /** True for plain integer counts — do not divide by 1e18. */
+  isCount?: boolean;
 }) {
-  const num = rawValue != null ? toNum(rawValue) : 0;
-  const isCount = !suffix;
+  const num = rawValue != null
+    ? isCount ? Number(rawValue) : toNum(rawValue)
+    : 0;
 
   return (
     <div className="panel stat-glow p-3 sm:p-4">
