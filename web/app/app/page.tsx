@@ -265,17 +265,12 @@ export default function DashboardPage() {
           {/* ── Activity feed ── */}
           {currentStage >= 0 && <ActivityFeed stageId={currentStage} />}
 
-          {/* ── Protocol stats ── */}
-          <section className="grid grid-cols-3 gap-3 sm:gap-4">
+          {/* ── Protocol stats (public only — no treasury) ── */}
+          <section className="grid grid-cols-2 gap-3 sm:gap-4">
             <MiniStat label="Members" rawValue={stats.memberCount} />
             <MiniStat
-              label="Paid out"
+              label="Paid to members"
               rawValue={stats.totalPoolPaid}
-              suffix={` ${PAYMENT_TOKEN_SYMBOL}`}
-            />
-            <MiniStat
-              label="Treasury"
-              rawValue={stats.totalTreasuryPaid}
               suffix={` ${PAYMENT_TOKEN_SYMBOL}`}
             />
           </section>

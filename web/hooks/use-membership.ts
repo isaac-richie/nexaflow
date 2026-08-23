@@ -245,13 +245,18 @@ export function useProtocolOpen() {
   };
 }
 
-/** Protocol-wide counters for the dashboard header. */
+/**
+ * Public protocol-wide counters for the dashboard.
+ *
+ * Deliberately excludes treasury figures. Those are administrative — the
+ * public dashboard shows what members earned and how many people are on
+ * chain, and nothing about internal treasury flows.
+ */
 export function useProtocolStats() {
   const query = useReadContracts({
     contracts: [
       { ...base, functionName: "memberCount" },
       { ...base, functionName: "totalPoolPaid" },
-      { ...base, functionName: "totalTreasuryPaid" },
     ],
     query: {
       enabled: IS_DEPLOYED,
@@ -260,13 +265,11 @@ export function useProtocolStats() {
     },
   });
 
-  const [members, poolPaid, treasuryPaid] = query.data ?? [];
+  const [members, poolPaid] = query.data ?? [];
 
   return {
     ...query,
     memberCount: members?.status === "success" ? (members.result as bigint) : undefined,
     totalPoolPaid: poolPaid?.status === "success" ? (poolPaid.result as bigint) : undefined,
-    totalTreasuryPaid:
-      treasuryPaid?.status === "success" ? (treasuryPaid.result as bigint) : undefined,
   };
 }
