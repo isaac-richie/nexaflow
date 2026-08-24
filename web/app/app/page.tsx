@@ -12,7 +12,6 @@ import {
   useAllStageMemberships,
   useAwardInfo,
   useMember,
-  useProtocolStats,
 } from "@/hooks/use-membership";
 import {
   ConnectPrompt,
@@ -33,7 +32,6 @@ export default function DashboardPage() {
   const { isRegistered, member, isLoading: memberLoading } = useMember();
   const { stages, currentStage, isLoading: stagesLoading } =
     useAllStageMemberships();
-  const stats = useProtocolStats();
   const { award } = useAwardInfo(currentStage);
 
   const loading = memberLoading || stagesLoading;
@@ -264,16 +262,6 @@ export default function DashboardPage() {
 
           {/* ── Activity feed ── */}
           {currentStage >= 0 && <ActivityFeed stageId={currentStage} />}
-
-          {/* ── Protocol stats (public only — no treasury) ── */}
-          <section className="grid grid-cols-2 gap-3 sm:gap-4">
-            <MiniStat label="Members" rawValue={stats.memberCount} isCount />
-            <MiniStat
-              label="Paid to members"
-              rawValue={stats.totalPoolPaid}
-              suffix={` ${PAYMENT_TOKEN_SYMBOL}`}
-            />
-          </section>
         </>
       )}
     </div>
@@ -335,38 +323,6 @@ function StatCard({
           {hint}
         </div>
       )}
-    </div>
-  );
-}
-
-function MiniStat({
-  label,
-  rawValue,
-  suffix = "",
-  isCount,
-}: {
-  label: string;
-  rawValue?: bigint;
-  suffix?: string;
-  /** True for plain integer counts — do not divide by 1e18. */
-  isCount?: boolean;
-}) {
-  const num = rawValue != null
-    ? isCount ? Number(rawValue) : toNum(rawValue)
-    : 0;
-
-  return (
-    <div className="panel stat-glow p-3 sm:p-4">
-      <div className="text-[9px] uppercase tracking-wider text-faint sm:text-[11px]">
-        {label}
-      </div>
-      <div className="figure mt-1 text-sm font-bold text-ink sm:text-lg">
-        <CountUp
-          value={num}
-          decimals={isCount ? 0 : 2}
-          suffix={suffix}
-        />
-      </div>
     </div>
   );
 }
