@@ -26,6 +26,7 @@ import { StageRing } from "@/components/app/stage-ring";
 import { CountUp } from "@/components/app/count-up";
 import { ActivityFeed } from "@/components/app/activity-feed";
 import { DashboardSkeleton } from "@/components/app/shimmer-skeleton";
+import { ProductBenefits } from "@/components/app/product-benefits";
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
@@ -259,6 +260,9 @@ export default function DashboardPage() {
               })}
             </div>
           </section>
+
+          {/* ── Community product benefits ── */}
+          <ProductBenefits stages={stages} />
 
           {/* ── Activity feed ── */}
           {currentStage >= 0 && <ActivityFeed stageId={currentStage} />}
