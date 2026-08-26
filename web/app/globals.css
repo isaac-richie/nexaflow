@@ -410,6 +410,18 @@ body {
   background: linear-gradient(90deg, transparent, hsl(var(--up) / 0.6), transparent);
 }
 
+/* Locked stage detail: quiet texture without adding an image request. */
+.locked-board-panel {
+  background-color: hsl(var(--surface-2) / 0.45);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 9px,
+    hsl(var(--line) / 0.18) 9px,
+    hsl(var(--line) / 0.18) 10px
+  );
+}
+
 /* On mobile, tone down for perf. */
 @media (max-width: 639px) {
   .orb { filter: blur(80px); }

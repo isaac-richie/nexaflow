@@ -7,7 +7,11 @@ import {
   PAYMENT_TOKEN_SYMBOL,
   STAGE_PRESETS,
 } from "@/lib/contracts/config";
-import { useAllStageMemberships, useMember } from "@/hooks/use-membership";
+import {
+  useAllStageMemberships,
+  useMember,
+  useStageConfigs,
+} from "@/hooks/use-membership";
 import {
   ConnectPrompt,
   LoadingPanel,
@@ -21,6 +25,7 @@ export default function BoardPage() {
   const { isConnected } = useAccount();
   const { isRegistered, isLoading: memberLoading } = useMember();
   const { stages, currentStage, isLoading } = useAllStageMemberships();
+  const { configs, isLoading: configsLoading } = useStageConfigs();
   const [expandedStage, setExpandedStage] = useState<number | null>(null);
   const initialStageOpened = useRef(false);
 
@@ -47,7 +52,7 @@ export default function BoardPage() {
         <NotDeployedNotice />
       ) : !isConnected ? (
         <ConnectPrompt />
-      ) : memberLoading || isLoading ? (
+      ) : memberLoading || isLoading || configsLoading ? (
         <LoadingPanel />
       ) : !isRegistered ? (
         <NotRegisteredNotice />
@@ -55,13 +60,24 @@ export default function BoardPage() {
         <div className="space-y-3">
           {STAGE_PRESETS.map((preset) => {
             const membership = stages?.[preset.stageId];
+            const config = configs?.[preset.stageId];
             const enrolled = Boolean(membership?.enrolled);
             const expanded = expandedStage === preset.stageId;
             const filled = Number(membership?.slotsFilledBelow ?? 0n);
             const completed = Number(membership?.rolloverCount ?? 0n);
-            const totalRecorded = completed * preset.slots + filled;
+            const slotCount = Number(config?.treeSlots ?? BigInt(preset.slots));
+            const totalRecorded = completed * slotCount + filled;
             const currentBoard = completed + 1;
             const panelId = `stage-board-${preset.stageId}`;
+            const milestone = Number(
+              config?.rolloversForAward ?? BigInt(preset.rolloversForAward),
+            );
+            const fee = config
+              ? formatToken(config.fee)
+              : preset.fee.toLocaleString();
+            const previousStageJoined =
+              preset.stageId === 0 ||
+              Boolean(stages?.[preset.stageId - 1]?.enrolled);
 
             return (
               <section
@@ -80,7 +96,7 @@ export default function BoardPage() {
                   }
                   aria-expanded={expanded}
                   aria-controls={panelId}
-                  className="flex min-h-20 w-full items-center gap-3 p-4 text-left sm:gap-5 sm:p-5"
+                  className="flex min-h-20 w-full items-center gap-3 p-4 text-left outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold/70 sm:gap-5 sm:p-5"
                 >
                   <div
                     className={cn(
@@ -113,7 +129,7 @@ export default function BoardPage() {
                     {enrolled ? (
                       <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-muted sm:text-xs">
                         <span>{completed} completed</span>
-                        <span>{filled}/{preset.slots} current positions</span>
+                        <span>{filled}/{slotCount} current positions</span>
                         <span>{formatToken(membership?.stageEarnings)} {PAYMENT_TOKEN_SYMBOL} earned</span>
                       </div>
                     ) : (
@@ -145,10 +161,13 @@ export default function BoardPage() {
                 {expanded && (
                   <div id={panelId} className="border-t border-line p-4 sm:p-5">
                     {!enrolled || !membership ? (
-                      <div className="rounded-xl border border-dashed border-line bg-surface-2/50 p-5 text-sm text-muted">
-                        This stage has not been activated yet. Your board details
-                        will appear here after you join it.
-                      </div>
+                      <LockedStagePanel
+                        stageId={preset.stageId}
+                        fee={fee}
+                        slots={slotCount}
+                        milestone={milestone}
+                        available={previousStageJoined}
+                      />
                     ) : (
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -170,7 +189,7 @@ export default function BoardPage() {
                                   Board #{currentBoard}
                                 </h3>
                                 <p className="mt-0.5 text-[11px] text-faint">
-                                  {filled} filled and {preset.slots - filled} open
+                                  {filled} filled and {slotCount - filled} open
                                 </p>
                               </div>
                               <span className="rounded-full bg-gold/10 px-2.5 py-1 text-[10px] font-medium text-gold">
@@ -194,6 +213,30 @@ export default function BoardPage() {
                               count. The live tree shows the current board after
                               the latest rollover.
                             </div>
+
+                            <div className="rounded-xl border border-line bg-surface-2/45 p-4">
+                              <div className="label">Stage rules</div>
+                              <div className="mt-2 space-y-1.5 text-xs text-muted">
+                                <div className="flex items-center justify-between gap-3">
+                                  <span>Board size</span>
+                                  <span className="font-medium text-ink">{slotCount} positions</span>
+                                </div>
+                                <div className="flex items-center justify-between gap-3">
+                                  <span>Award milestone</span>
+                                  <span className="text-right font-medium text-ink">
+                                    {milestone === 0
+                                      ? "Not applicable"
+                                      : `${milestone} rollovers`}
+                                  </span>
+                                </div>
+                              </div>
+                              {milestone === 0 && (
+                                <p className="mt-3 border-t border-line pt-3 text-[11px] leading-relaxed text-faint">
+                                  Stage 1 opens your first board but has no
+                                  rollover-based product award milestone.
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -205,6 +248,87 @@ export default function BoardPage() {
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function LockedStagePanel({
+  stageId,
+  fee,
+  slots,
+  milestone,
+  available,
+}: {
+  stageId: number;
+  fee: string;
+  slots: number;
+  milestone: number;
+  available: boolean;
+}) {
+  const label = `Stage ${stageId + 1}`;
+  const previousLabel = `Stage ${stageId}`;
+
+  return (
+    <div className="locked-board-panel rounded-xl border border-dashed border-line p-5 sm:p-6">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line bg-surface-1 text-gold">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect width="14" height="11" x="5" y="10" rx="2" />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+            </svg>
+          </div>
+          <div>
+            <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-gold">
+              {stageId === 0
+                ? "Registration required"
+                : available
+                  ? "Available to activate"
+                  : "Locked"}
+            </div>
+            <h3 className="mt-1 font-display text-base font-semibold text-ink">
+              {label} board
+            </h3>
+            <p className="mt-1 max-w-xl text-xs leading-relaxed text-muted sm:text-sm">
+              {stageId === 0
+                ? "Complete registration to activate your first board."
+                : available
+                  ? `Your previous stage is active. Visit Join when you are ready to activate ${label}.`
+                  : `Activate ${previousLabel} first to unlock this board.`}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 sm:min-w-[300px]">
+          <LockedFact label="Entry" value={`${fee} USDT`} />
+          <LockedFact label="Board" value={`${slots} slots`} />
+          <LockedFact
+            label="Milestone"
+            value={milestone === 0 ? "None" : `${milestone} cycles`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LockedFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-line bg-surface-1/80 p-2.5 text-center">
+      <div className="text-[9px] uppercase tracking-wider text-faint">{label}</div>
+      <div className="figure mt-1 text-[11px] font-medium text-ink sm:text-xs">
+        {value}
+      </div>
     </div>
   );
 }

@@ -83,6 +83,12 @@ export function ProductBenefits({ stages }: Props) {
               <p className="mt-2 text-xs leading-relaxed text-muted">
                 {benefit.description}
               </p>
+              {activated && (
+                <div className="mt-3 flex items-center gap-2 border-t border-line pt-3 text-[11px] text-faint">
+                  <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+                  Verification required for fulfilment
+                </div>
+              )}
             </article>
           );
         })}

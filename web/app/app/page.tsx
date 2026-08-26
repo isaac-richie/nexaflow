@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useAccount } from "wagmi";
 import { formatUnits } from "viem";
 import {
@@ -110,12 +111,22 @@ export default function DashboardPage() {
 
           {/* ── Stage progress: horizontal scroll on mobile ── */}
           <section className="panel panel-sheen p-4 sm:p-6">
-            <h2 className="font-display text-base font-semibold sm:text-lg">
-              Your stages
-            </h2>
-            <p className="mt-0.5 text-xs text-muted sm:text-sm">
-              Each position filled pays you once.
-            </p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="font-display text-base font-semibold sm:text-lg">
+                  Your stages
+                </h2>
+                <p className="mt-0.5 text-xs text-muted sm:text-sm">
+                  Each position filled pays you once.
+                </p>
+              </div>
+              <Link
+                href="/app/board"
+                className="shrink-0 rounded-lg border border-line bg-surface-2 px-3 py-2 text-[11px] font-medium text-gold outline-none transition-colors hover:border-gold/40 hover:bg-gold/5 focus-visible:ring-2 focus-visible:ring-gold/70 sm:text-xs"
+              >
+                View all boards
+              </Link>
+            </div>
 
             {/* Mobile: horizontal scroll cards */}
             <div className="mt-4 stage-scroll sm:hidden">
