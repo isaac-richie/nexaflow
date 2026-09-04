@@ -9,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test:rpc": "node scripts/test-rpc-policy.mjs",
+    "test:network": "node --no-warnings --experimental-strip-types --test scripts/test-network-graph.mts",
     "gen:abi": "node scripts/gen-abi.mjs"
   },
   "dependencies": {

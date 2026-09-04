@@ -28,6 +28,7 @@ import { CountUp } from "@/components/app/count-up";
 import { ActivityFeed } from "@/components/app/activity-feed";
 import { DashboardSkeleton } from "@/components/app/shimmer-skeleton";
 import { ProductBenefits } from "@/components/app/product-benefits";
+import { NetworkOverview } from "@/components/app/network-overview";
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
@@ -108,6 +109,9 @@ export default function DashboardPage() {
 
           {/* ── Referral card ── */}
           <ReferralCard address={address} />
+
+          {/* ── Permanent referral lineage ── */}
+          <NetworkOverview address={address} />
 
           {/* ── Stage progress: horizontal scroll on mobile ── */}
           <section className="panel panel-sheen p-4 sm:p-6">
