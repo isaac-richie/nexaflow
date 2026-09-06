@@ -21,6 +21,17 @@ const FINALITY_BLOCKS = 20n;
 const DEFAULT_CHUNK_SIZE = 250_000n;
 const MIN_SPLIT_RANGE = 1_000n;
 
+// Vercel data caches can survive releases. Never reuse another chain's logs
+// or another deployment's complete snapshot when production switches versions.
+const CHAIN_CACHE_KEY = process.env.NEXT_PUBLIC_CHAIN === "bsc" ? "56" : "97";
+const SNAPSHOT_CACHE_SCOPE = [
+  CHAIN_CACHE_KEY,
+  (process.env.NEXT_PUBLIC_MEMBERSHIP_ADDRESS ?? "unconfigured").toLowerCase(),
+  process.env.MEMBERSHIP_DEPLOYMENT_BLOCK ??
+    process.env.NEXT_PUBLIC_MEMBERSHIP_DEPLOYMENT_BLOCK ?? "known-deployment",
+  process.env.NETWORK_INDEX_CHUNK_SIZE ?? DEFAULT_CHUNK_SIZE.toString(),
+];
+
 // Production deployments already used by the frontend. Keeping their creation
 // blocks here makes the network panel work immediately on Vercel even before a
 // deployment-block environment variable is added. Future contracts should set
@@ -140,7 +151,7 @@ async function fetchRegistrationChunk(
 // cache persists these results across users and serverless invocations.
 const cachedClosedChunk = unstable_cache(
   fetchRegistrationChunk,
-  ["nexaflow-registration-closed-chunk-v1"],
+  ["nexaflow-registration-closed-chunk-v2", CHAIN_CACHE_KEY],
   { revalidate: false },
 );
 
@@ -148,7 +159,7 @@ const cachedClosedChunk = unstable_cache(
 // useful without turning every page view into an RPC log scan.
 const cachedLiveChunk = unstable_cache(
   fetchRegistrationChunk,
-  ["nexaflow-registration-live-chunk-v1"],
+  ["nexaflow-registration-live-chunk-v2", CHAIN_CACHE_KEY],
   { revalidate: 60 },
 );
 
@@ -161,7 +172,7 @@ const fetchBlockTimestamp = unstable_cache(
     const value = await client().getBlock({ blockNumber: BigInt(block) });
     return Number(value.timestamp);
   },
-  ["nexaflow-block-timestamp-v1"],
+  ["nexaflow-block-timestamp-v2", CHAIN_CACHE_KEY],
   { revalidate: false },
 );
 
@@ -243,6 +254,6 @@ async function buildRegistrationSnapshot(): Promise<{
 
 export const getRegistrationSnapshot = unstable_cache(
   buildRegistrationSnapshot,
-  ["nexaflow-registration-snapshot-v1"],
+  ["nexaflow-registration-snapshot-v2", ...SNAPSHOT_CACHE_SCOPE],
   { revalidate: 60 },
 );

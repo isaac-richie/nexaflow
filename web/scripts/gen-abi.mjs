@@ -21,7 +21,7 @@ const repoRoot = resolve(here, "..", "..");
 
 const ARTIFACT = resolve(
   repoRoot,
-  "out/BinaryMembershipV4.sol/BinaryMembershipV4.json",
+  "out/BinaryMembershipV5.sol/BinaryMembershipV5.json",
 );
 const OUT = resolve(here, "..", "lib/contracts/binaryMembershipAbi.ts");
 
@@ -65,7 +65,7 @@ if (missing.length) {
 }
 
 const header = `// GENERATED FILE - do not edit by hand.
-// Source: out/BinaryMembershipV4.sol/BinaryMembershipV4.json
+// Source: out/BinaryMembershipV5.sol/BinaryMembershipV5.json
 // Regenerate: forge build && npm --prefix web run gen:abi
 
 export const BINARY_MEMBERSHIP_ABI = `;

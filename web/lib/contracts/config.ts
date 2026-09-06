@@ -3,7 +3,7 @@ import { bsc, bscTestnet } from "wagmi/chains";
 /**
  * Contract + chain configuration.
  *
- * V4 pays fixed fees in canonical BSC USDT at
+ * V5 pays fixed fees in canonical BSC USDT at
  * 0x55d398326f99059fF775485246999027B3197955. The membership address remains
  * environment-driven so a future audited redeployment is a configuration
  * change rather than a source-code edit.

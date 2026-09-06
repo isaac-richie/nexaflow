@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ConnectButton } from "@/components/app/connect-button";
 import { AppNav } from "@/components/app/app-nav";
+import { V5ReleaseNotice } from "@/components/app/v5-release-notice";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -42,6 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <V5ReleaseNotice />
         {children}
       </main>
     </div>

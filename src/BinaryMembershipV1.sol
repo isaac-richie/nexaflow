@@ -282,7 +282,7 @@ contract BinaryMembershipV1 is AccessControlDefaultAdminRules, Pausable, Reentra
             if (treeDepths[i] > MAX_TREE_DEPTH) {
                 revert InvalidBoardGeometry(i, treeSlots[i], treeDepths[i]);
             }
-            if (treeSlots[i] != (1 << (treeDepths[i] + 1)) - 2) {
+            if (treeSlots[i] != (2 ** (treeDepths[i] + 1)) - 2) {
                 revert InvalidBoardGeometry(i, treeSlots[i], treeDepths[i]);
             }
             // A placement at full board depth pays treeDepth uplines one
@@ -502,8 +502,7 @@ contract BinaryMembershipV1 is AccessControlDefaultAdminRules, Pausable, Reentra
 
         // whatever the uplines did not consume goes to treasury
         uint256 treasuryAmount = feeAmount - poolPaid;
-        pendingTreasury += treasuryAmount;
-        totalTreasuryPaid += treasuryAmount;
+        _creditTreasury(treasuryAmount);
 
         // credit the placement to every board it lands on
         _propagateSlotFilled(parent, stageId);
@@ -520,6 +519,14 @@ contract BinaryMembershipV1 is AccessControlDefaultAdminRules, Pausable, Reentra
     {
         StageConfig storage config = stages[stageId];
         return (config.fee, config.nodeReward);
+    }
+
+    /// @dev Accounts for the fee remainder after upline rewards. Derived
+    ///      contracts may override this to distribute the remainder immediately
+    ///      instead of retaining it for a later treasury withdrawal.
+    function _creditTreasury(uint256 amount) internal virtual {
+        pendingTreasury += amount;
+        totalTreasuryPaid += amount;
     }
 
     /// @notice Pay every upline whose board this placement lands on.
