@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ConnectButton } from "@/components/app/connect-button";
 import { AppNav } from "@/components/app/app-nav";
 import { Mark } from "@/components/site-nav";
-import { V5ReleaseNotice } from "@/components/app/v5-release-notice";
 import styles from "@/components/app/member-ui.module.css";
 
 export const metadata: Metadata = {
@@ -34,7 +33,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       <main id="member-content" tabIndex={-1} className={styles.main}>
-        <V5ReleaseNotice />
         {children}
       </main>
 

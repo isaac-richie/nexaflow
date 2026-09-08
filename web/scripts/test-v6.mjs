@@ -95,16 +95,9 @@ test("public membership copy uses the brand without release labels", () => {
     assert.match(text, /NexaFlow/);
     assert.doesNotMatch(text, /\bV[456]\b|tests? (?:done|passed|complete)/i);
   }
-  for (const IS_V6 of [true, false]) {
-    const { V5ReleaseNotice } = loadV6("components/app/v5-release-notice.tsx", {
-      "@/lib/contracts/config": { IS_V6, MEMBERSHIP_ADDRESS: "0xeF7edE29C63AbD3ADD2c829bdD70625b47e1a245" },
-    });
-    const html = renderToStaticMarkup(React.createElement(V5ReleaseNotice));
-    assert.match(html, /Returning member/);
-    assert.match(html, /have not been transferred/);
-    assert.match(html, /before paying again/);
-    assert.doesNotMatch(html, /\bV[456]\b/);
-  }
+  const layout = readFileSync(new URL("../app/app/layout.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(layout, /V5ReleaseNotice|v5-release-notice|Returning member/i);
+  assert.match(layout, /Legal disclosures/);
 });
 
 test("copy cleanup preserves the stored consent version and reserve disclosures", () => {
