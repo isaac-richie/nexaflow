@@ -88,3 +88,33 @@ test("recovery shows reserves as records and disables joining; first join remain
   const html = render("join", { snapshot: fresh });
   assert.match(html, /Join Stage 1/); assert.match(html, /20.00 USDT/); assert.match(html, /Sponsor address \(optional\)/);
 });
+
+test("public membership copy uses the brand without release labels", () => {
+  for (const view of ["overview", "boards", "join", "network"]) {
+    const text = render(view).replace(/<[^>]*>/g, " ");
+    assert.match(text, /NexaFlow/);
+    assert.doesNotMatch(text, /\bV[456]\b|tests? (?:done|passed|complete)/i);
+  }
+  for (const IS_V6 of [true, false]) {
+    const { V5ReleaseNotice } = loadV6("components/app/v5-release-notice.tsx", {
+      "@/lib/contracts/config": { IS_V6, MEMBERSHIP_ADDRESS: "0xeF7edE29C63AbD3ADD2c829bdD70625b47e1a245" },
+    });
+    const html = renderToStaticMarkup(React.createElement(V5ReleaseNotice));
+    assert.match(html, /Returning member/);
+    assert.match(html, /have not been transferred/);
+    assert.match(html, /before paying again/);
+    assert.doesNotMatch(html, /\bV[456]\b/);
+  }
+});
+
+test("copy cleanup preserves the stored consent version and reserve disclosures", () => {
+  const { CONSENT_VERSION } = loadV6("lib/consent.ts", {}, { process: { env: { NEXT_PUBLIC_MEMBERSHIP_VERSION: "v6" } } });
+  assert.equal(CONSENT_VERSION, "2026-09-08-v6");
+  const gate = readFileSync(new URL("../components/consent-gate.tsx", import.meta.url), "utf8");
+  assert.match(gate, /version: CONSENT_VERSION/);
+  assert.doesNotMatch(gate, /Consent version \{CONSENT_VERSION\}/);
+  const legal = readFileSync(new URL("../app/legal/page.tsx", import.meta.url), "utf8");
+  assert.match(legal, /title="Re-entry and reserve custody"/);
+  assert.match(legal, /A single administrator can move all re-entry reserves/);
+  assert.match(legal, /not automatically transferred here/);
+});

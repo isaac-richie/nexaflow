@@ -27,7 +27,7 @@ export function useV6Snapshot() {
 export function v6Error(error: unknown): string {
   const text = error instanceof Error ? error.message : String(error);
   if (/User rejected|User denied|rejected the request/i.test(text)) return "Cancelled in your wallet. No new transaction was submitted by this action.";
-  if (/UnknownSponsor/.test(text)) return "That sponsor has not joined V6. Use a V6 member’s address or leave it blank.";
+  if (/UnknownSponsor/.test(text)) return "That sponsor is not a current member. Use a current member’s address or leave it blank.";
   if (/PlacementUnavailable/.test(text)) return "No placement is available yet. Try again after pending re-entries are processed.";
   if (/EmergencyRecoveryActive|EnforcedPause/.test(text)) return "The protocol is paused. Do not send funds manually.";
   if (/insufficient funds/i.test(text)) return "Your wallet needs enough USDT for entry and BNB for network fees.";
@@ -64,7 +64,7 @@ export function useV6Transaction() {
       const stage = options.stage ?? -1;
       if (action === "approve" || action === "purchase") {
         checkV6Purchase(fresh, address, sponsor, stage, options.fee ?? -1n);
-        if (!fresh.registered && sponsor !== zeroAddress && !await client.readContract({ address: MEMBERSHIP_ADDRESS, abi, functionName: "registered", args: [sponsor] })) throw new Error("That sponsor has not joined V6. Leave the field blank to start under the protocol.");
+        if (!fresh.registered && sponsor !== zeroAddress && !await client.readContract({ address: MEMBERSHIP_ADDRESS, abi, functionName: "registered", args: [sponsor] })) throw new Error("That sponsor is not a current member. Leave the field blank to start under the protocol.");
       }
       const send = async (request: Parameters<typeof wallet.writeContract>[0]) => {
         await checkWallet(); setMessage("Confirm in your wallet…");

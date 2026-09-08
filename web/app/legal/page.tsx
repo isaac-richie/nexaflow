@@ -26,7 +26,7 @@ export default function LegalPage() {
 
       <main className="mx-auto max-w-4xl px-5 py-10 sm:px-6 sm:py-16">
         <div className="max-w-2xl">
-          <div className="label">Consent version {CONSENT_VERSION}</div>
+          <div className="label">Updated {CONSENT_VERSION.slice(0, 10)}</div>
           <h1 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Legal disclosures
           </h1>
@@ -48,10 +48,10 @@ export default function LegalPage() {
             <p>Stage and board figures describe the contract&apos;s gross payment mechanics. They are not forecasts, typical results, investment returns, or promises of profit. Entry fees are non-refundable except where applicable law requires otherwise.</p>
           </Disclosure>
 
-          {IS_V6 && <Disclosure id="v6-reserves" title="V6 re-entry and reserve custody">
+          {IS_V6 && <Disclosure id="v6-reserves" title="Re-entry and reserve custody">
             <p>Re-entry reserves are set aside from qualifying participation to fund another board position. They are not an extra cash bonus or a member-withdrawable balance. An incomplete board may retain its reserve indefinitely if qualifying activity stops.</p>
             <p>A single administrator can move all re-entry reserves to an external wallet during emergency recovery, without a second approver. New entries and re-entries then stop until reserves and unpaid payouts are fully backed again. The system cannot force that wallet to return the money; reserves may be unavailable indefinitely.</p>
-            <p>Recorded unpaid payouts remain claimable during recovery. A failed direct payout may require a separate claim transaction and network fees. Earlier-version memberships and balances are not automatically transferred into V6.</p>
+            <p>Recorded unpaid payouts remain claimable during recovery. A failed direct payout may require a separate claim transaction and network fees. Memberships and balances from the previous platform are not automatically transferred here.</p>
           </Disclosure>}
 
           <Disclosure id="blockchain" title="Blockchain and wallet notice">

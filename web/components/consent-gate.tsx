@@ -362,9 +362,6 @@ export function ConsentGate() {
             No person is authorised to promise guaranteed income, profit,
             product delivery, or board completion.
           </p>
-          <p className="mt-2 text-center text-[10px] uppercase tracking-wider text-faint/70">
-            Consent version {CONSENT_VERSION}
-          </p>
         </div>
       </div>
     </div>

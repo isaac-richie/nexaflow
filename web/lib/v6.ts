@@ -20,14 +20,14 @@ export type V6Snapshot = {
 export function validateV6Deployment(d: V6Deployment) {
   if (![56, 97, 31337].includes(d.chainId) || !isAddress(d.address) || !isAddress(d.token) ||
     d.address === zeroAddress || d.token === zeroAddress || !/^0x[\da-fA-F]{64}$/.test(d.runtimeHash ?? "")) {
-    throw new Error("V6 configuration is incomplete. Registration is disabled.");
+    throw new Error("Registration is temporarily unavailable. Please try again later.");
   }
 }
 
 /** Fail closed for an old address, empty code, wrong token or wrong RPC chain. */
 export async function verifyV6(client: PublicClient, d: V6Deployment, block?: bigint) {
   validateV6Deployment(d);
-  if (await client.getChainId() !== d.chainId) throw new Error("Network does not match this deployment.");
+  if (await client.getChainId() !== d.chainId) throw new Error("Network mismatch. Please switch to the supported network.");
   const code = await client.getCode({ address: d.address, blockNumber: block });
   if (!code || code === "0x" || keccak256(code).toLowerCase() !== d.runtimeHash!.toLowerCase()) {
     throw new Error("Contract identity check failed. No approval or payment will be requested.");

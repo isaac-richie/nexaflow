@@ -35,11 +35,11 @@ function Member({ view }: { view: View }) {
   }
   const s = query.data;
   return <div className={styles.stack}>
-    <header className={styles.heading}><div><p className={styles.eyebrow}>NexaFlow V6</p><h1>{view === "join" ? "Your next stage starts here." : view === "boards" ? "Every board. Every cycle." : view === "network" ? "Your community, connected." : "Your progress, in view."}</h1></div>
+    <header className={styles.heading}><div><p className={styles.eyebrow}>NexaFlow</p><h1>{view === "join" ? "Your next stage starts here." : view === "boards" ? "Every board. Every cycle." : view === "network" ? "Your community, connected." : "Your progress, in view."}</h1></div>
       {isConnected && chainId === ACTIVE_CHAIN.id && IS_DEPLOYED && <button className={styles.button} disabled={query.isFetching || cooldown} onClick={refresh}>{query.isFetching ? "Updating…" : cooldown ? "Please wait" : "Refresh ↻"}</button>}
     </header>
     {!IS_DEPLOYED ? <NotDeployedNotice /> : !isConnected ? <ConnectPrompt /> : chainId !== ACTIVE_CHAIN.id ? <section className={styles.notice}><h2>Switch to {ACTIVE_CHAIN.name}</h2><p>Your membership and payments must use the correct network.</p><ConnectButton /></section>
-      : query.isPending ? <LoadingPanel label="Checking V6 and reading your boards…" />
+      : query.isPending ? <LoadingPanel label="Loading your boards…" />
       : query.isError || !s ? <section className={styles.notice} role="alert"><h2>Membership unavailable</h2><p>{query.error ? v6Error(query.error) : "Please refresh to try again."}</p><p>No payment is needed to reload your membership.</p></section>
       : <>
         {(s.paused || s.recovery) && <section className={styles.notice} role="status"><h2>{s.recovery ? "Emergency recovery in progress" : "Registration is paused"}</h2><p>{s.recovery ? "New entries and re-entries are frozen while reserve backing is restored. Your recorded boards remain visible. Unpaid payouts can still be claimed." : "You can review existing boards and claim unpaid payouts. New stage entries are temporarily disabled."} Do not send tokens manually.</p></section>}
@@ -108,7 +108,7 @@ function V6Join({ snapshot: s, member }: { snapshot: V6Snapshot; member: Address
       <h2>{config ? `Join Stage ${stage + 1}` : "All six stages unlocked"}</h2><p className={styles.muted}>Start at Stage 1 and unlock each next stage in order. You do not need to complete a board before buying the next stage.</p>
       <div className="my-5 grid grid-cols-2 gap-2 sm:grid-cols-3">{s.stages.map(item => <div key={item.id} className="rounded-xl border border-line p-3 text-sm"><strong>Stage {item.id + 1}</strong><p className="mt-1 text-muted">{item.enrolled ? "Joined" : item.id === stage ? "Available" : "Locked"}</p></div>)}</div>
       {!s.registered && <div className="mb-5"><label htmlFor="v6-sponsor" className="block text-sm">Sponsor address (optional)</label><input id="v6-sponsor" className="my-3 w-full rounded-xl border border-line bg-surface-2 p-3 text-sm" value={sponsor} onChange={e => changeSponsor(e.target.value.trim())} disabled={tx.busy} placeholder="Leave blank to start under the protocol" autoComplete="off" spellCheck={false} />
-        <p className={styles.muted}>Without a sponsor, you start under the protocol. After joining, use your own referral link to grow your network. A sponsor must already be registered in V6.</p>
+        <p className={styles.muted}>Your sponsor must be a current member. Without one, you start under the protocol and can share your own referral link after joining.</p>
         {!sponsorValid && <p role="alert" className="mt-2 text-sm text-down">Enter a valid wallet other than your own, or leave it blank.</p>}
         {sponsor && <button className={styles.button} disabled={tx.busy} onClick={() => changeSponsor("")}>Clear sponsor</button>}
       </div>}
