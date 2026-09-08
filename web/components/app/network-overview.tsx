@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAddress } from "viem";
 import {
   referralCodeForAddress,
   referralPathForAddress,
 } from "@/lib/referrals";
 import type { NetworkSummary } from "@/lib/network-graph";
+import { ACTIVE_CHAIN, MEMBERSHIP_ADDRESS, MEMBERSHIP_VERSION } from "@/lib/contracts/config";
 
 type NetworkResponse = NetworkSummary & { syncedBlock: number };
 
@@ -36,13 +37,30 @@ function formatExact(value: number | undefined): string | undefined {
 }
 
 export function NetworkOverview({ address }: { address?: `0x${string}` }) {
+  return <WalletNetwork key={address?.toLowerCase() ?? "none"} address={address} />;
+}
+
+function WalletNetwork({ address }: { address?: `0x${string}` }) {
   const owner = useMemo(() => (address ? getAddress(address) : undefined), [address]);
   const [root, setRoot] = useState<`0x${string}` | undefined>(owner);
   const [generation, setGeneration] = useState(1);
   const [offset, setOffset] = useState(0);
-  const [data, setData] = useState<NetworkResponse>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [result, setResult] = useState<{ key: string; data: NetworkResponse }>();
+  const [loading, setLoading] = useState(true);
+  const [failure, setFailure] = useState<{ key: string; message: string }>();
+  const [retry, setRetry] = useState(0);
+  const [cooldown, setCooldown] = useState(false);
+  const refreshTimer = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(refreshTimer.current), []);
+  const refreshNetwork = () => {
+    if (loading || cooldown) return;
+    setCooldown(true);
+    setRetry(value => value + 1);
+    refreshTimer.current = setTimeout(() => setCooldown(false), 15_000);
+  };
+  const requestKey = `${root}:${generation}:${offset}:${retry}`;
+  const data = result?.key === requestKey ? result.data : undefined;
+  const error = failure?.key === requestKey ? failure.message : "";
 
   useEffect(() => {
     setRoot(owner);
@@ -58,10 +76,13 @@ export function NetworkOverview({ address }: { address?: `0x${string}` }) {
       generation: String(generation),
       offset: String(offset),
       limit: String(PAGE_SIZE),
+      contract: MEMBERSHIP_ADDRESS.toLowerCase(),
+      version: MEMBERSHIP_VERSION,
+      chain: String(ACTIVE_CHAIN.id),
     });
 
     setLoading(true);
-    setError("");
+    setFailure(undefined);
     fetch(`/api/network?${params}`, { signal: controller.signal })
       .then(async (response) => {
         const payload = (await response.json()) as
@@ -76,24 +97,24 @@ export function NetworkOverview({ address }: { address?: `0x${string}` }) {
         }
         return payload as NetworkResponse;
       })
-      .then(setData)
+      .then(payload => {
+        if (!controller.signal.aborted) setResult({ key: requestKey, data: payload });
+      })
       .catch((requestError: unknown) => {
-        if (requestError instanceof DOMException && requestError.name === "AbortError") return;
-        setError(
-          requestError instanceof Error
+        if (controller.signal.aborted) return;
+        setFailure({ key: requestKey, message: requestError instanceof Error
             ? requestError.message
-            : "Your network is temporarily unavailable.",
-        );
+            : "Your network is temporarily unavailable." });
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
       });
 
     return () => controller.abort();
-  }, [root, generation, offset]);
+  }, [root, generation, offset, requestKey]);
 
   const openBranch = useCallback((member: `0x${string}`) => {
-    setData(undefined);
+    setResult(undefined);
     setRoot(getAddress(member));
     setGeneration(1);
     setOffset(0);
@@ -101,7 +122,7 @@ export function NetworkOverview({ address }: { address?: `0x${string}` }) {
 
   const returnToOwner = useCallback(() => {
     if (!owner) return;
-    setData(undefined);
+    setResult(undefined);
     setRoot(owner);
     setGeneration(1);
     setOffset(0);
@@ -145,7 +166,7 @@ export function NetworkOverview({ address }: { address?: `0x${string}` }) {
           <p className="mt-1 truncate text-xs text-muted sm:text-sm">
             {isOwnNetwork ? (
               <>
-                <span className="figure text-ink">{generations || "0"}</span>{" "}
+                <span className="figure text-ink">{data ? generations : "—"}</span>{" "}
                 {generations === 1 ? "generation" : "generations"} deep
               </>
             ) : (
@@ -159,6 +180,7 @@ export function NetworkOverview({ address }: { address?: `0x${string}` }) {
             )}
           </p>
         </div>
+        <button type="button" onClick={refreshNetwork} disabled={loading || cooldown} className="btn-ghost min-h-11 px-3 py-2 text-xs disabled:opacity-50">{loading ? "Updating…" : cooldown ? "Please wait" : "Refresh network"}</button>
         {!isOwnNetwork && (
           <button
             type="button"
@@ -206,6 +228,7 @@ export function NetworkOverview({ address }: { address?: `0x${string}` }) {
           role="alert"
         >
           {error}
+          <button type="button" className="btn-ghost mt-3 block px-4 py-2" disabled={loading || cooldown} onClick={refreshNetwork}>Retry network</button>
         </div>
       ) : (
         <div className="mt-5 sm:mt-6">
@@ -236,7 +259,7 @@ export function NetworkOverview({ address }: { address?: `0x${string}` }) {
                 />
               )}
             </>
-          ) : loading ? (
+          ) : loading || !data ? (
             <NetworkRowsSkeleton />
           ) : (
             <EmptyState address={owner} />

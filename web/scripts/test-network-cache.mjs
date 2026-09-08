@@ -46,3 +46,8 @@ test("snapshot separates deployment blocks and respects server override", () => 
 test("address casing and RPC credential rotation do not create redundant caches", () => {
   assert.deepEqual(cacheKeys().at(-1).key, cacheKeys({ NEXT_PUBLIC_MEMBERSHIP_ADDRESS: v5.toUpperCase(), BSC_RPC_URL: "https://example.invalid" }).at(-1).key);
 });
+test("V6 registration event caches cannot reuse V5 decoded records", () => {
+  const v5 = cacheKeys();
+  const v6 = cacheKeys({ NEXT_PUBLIC_MEMBERSHIP_VERSION: "v6" });
+  for (const index of [0, 1, 3]) assert.notDeepEqual(v5[index].key, v6[index].key);
+});

@@ -7,13 +7,15 @@ import {
   getAddress,
   http,
   isAddress,
+  keccak256,
   parseAbiItem,
   type PublicClient,
 } from "viem";
 import { bsc, bscTestnet } from "viem/chains";
 import type { RegistrationRecord } from "@/lib/network-graph";
 
-const REGISTRATION_EVENT = parseAbiItem(
+const VERSION = process.env.NEXT_PUBLIC_MEMBERSHIP_VERSION ?? "v5";
+const REGISTRATION_EVENT = VERSION === "v6" ? parseAbiItem("event Registered(address indexed member, address indexed sponsor)") : parseAbiItem(
   "event MemberRegistered(address indexed member, address indexed sponsor, uint256 memberId)",
 );
 
@@ -26,6 +28,8 @@ const MIN_SPLIT_RANGE = 1_000n;
 const CHAIN_CACHE_KEY = process.env.NEXT_PUBLIC_CHAIN === "bsc" ? "56" : "97";
 const SNAPSHOT_CACHE_SCOPE = [
   CHAIN_CACHE_KEY,
+  VERSION,
+  process.env.NEXT_PUBLIC_V6_RUNTIME_HASH ?? "legacy",
   (process.env.NEXT_PUBLIC_MEMBERSHIP_ADDRESS ?? "unconfigured").toLowerCase(),
   process.env.MEMBERSHIP_DEPLOYMENT_BLOCK ??
     process.env.NEXT_PUBLIC_MEMBERSHIP_DEPLOYMENT_BLOCK ?? "known-deployment",
@@ -113,8 +117,9 @@ async function readRange(
       strict: true,
     });
 
-    return logs.flatMap((log) => {
-      const { member, sponsor, memberId } = log.args;
+    const records = logs.flatMap((log) => {
+      const { member, sponsor } = log.args;
+      const memberId = "memberId" in log.args ? log.args.memberId : 0n;
       if (!member || !sponsor || memberId == null || !log.transactionHash || log.blockNumber == null) {
         return [];
       }
@@ -122,11 +127,27 @@ async function readRange(
         member: getAddress(member),
         sponsor: getAddress(sponsor),
         memberId: Number(memberId),
+        logIndex: log.logIndex,
         blockNumber: Number(log.blockNumber),
         transactionHash: log.transactionHash,
       }];
     });
+    // V6 creates root positions in the constructor, without a Registered event.
+    // Include the first uncharged root position once, using its real receipt.
+    const start = deploymentBlock(address);
+    if (VERSION === "v6" && fromBlock <= start && start <= toBlock) {
+      const opened = await client().getLogs({ address, fromBlock: start, toBlock: start,
+        event: parseAbiItem("event PositionOpened(uint256 indexed id, address indexed member, uint8 indexed stage, uint256 parent, uint64 cycle, bool funded)"), strict: true });
+      if (!opened.some(log => log.args.id === 1n && log.args.stage === 0 && log.args.funded === false)) {
+        throw new Error("V6 deployment block does not contain the initial root position");
+      }
+      for (const log of opened) {
+        if (log.args.id === 1n && log.args.stage === 0 && log.args.funded === false) records.unshift({ member: getAddress(log.args.member), sponsor: "0x0000000000000000000000000000000000000000", memberId: 0, logIndex: log.logIndex, blockNumber: Number(log.blockNumber), transactionHash: log.transactionHash });
+      }
+    }
+    return records;
   } catch (error) {
+    if (error instanceof Error && error.message.startsWith("V6 deployment block")) throw error;
     const span = toBlock - fromBlock + 1n;
     if (span <= MIN_SPLIT_RANGE) throw error;
 
@@ -151,7 +172,7 @@ async function fetchRegistrationChunk(
 // cache persists these results across users and serverless invocations.
 const cachedClosedChunk = unstable_cache(
   fetchRegistrationChunk,
-  ["nexaflow-registration-closed-chunk-v2", CHAIN_CACHE_KEY],
+  ["nexaflow-registration-closed-chunk-v3", CHAIN_CACHE_KEY, VERSION],
   { revalidate: false },
 );
 
@@ -159,7 +180,7 @@ const cachedClosedChunk = unstable_cache(
 // useful without turning every page view into an RPC log scan.
 const cachedLiveChunk = unstable_cache(
   fetchRegistrationChunk,
-  ["nexaflow-registration-live-chunk-v2", CHAIN_CACHE_KEY],
+  ["nexaflow-registration-live-chunk-v3", CHAIN_CACHE_KEY, VERSION],
   { revalidate: 60 },
 );
 
@@ -211,6 +232,13 @@ async function buildRegistrationSnapshot(): Promise<{
   syncedBlock: number;
 }> {
   const address = membershipAddress();
+  if (!["v5", "v6"].includes(VERSION)) throw new Error("Unsupported network index version");
+  if (VERSION === "v6") {
+    if (await client().getChainId() !== Number(CHAIN_CACHE_KEY)) throw new Error("Network index chain mismatch");
+    const expected = process.env.NEXT_PUBLIC_V6_RUNTIME_HASH;
+    const code = await client().getCode({ address });
+    if (!expected || !code || code === "0x" || keccak256(code).toLowerCase() !== expected.toLowerCase()) throw new Error("V6 network index contract identity mismatch");
+  }
   const start = deploymentBlock(address);
   const latest = await client().getBlockNumber();
   const safeHead = latest > FINALITY_BLOCKS ? latest - FINALITY_BLOCKS : latest;
@@ -244,7 +272,8 @@ async function buildRegistrationSnapshot(): Promise<{
   const unique = new Map<string, RegistrationRecord>();
   for (const record of records) unique.set(record.member.toLowerCase(), record);
 
-  const sorted = [...unique.values()].sort((a, b) => a.memberId - b.memberId);
+  const sorted = [...unique.values()].sort((a, b) => VERSION === "v6" ? a.blockNumber - b.blockNumber || (a.logIndex ?? 0) - (b.logIndex ?? 0) : a.memberId - b.memberId);
+  if (VERSION === "v6") sorted.forEach((record, index) => { record.memberId = index + 1; });
   const withTimestamps = await attachTimestamps(sorted);
   return {
     records: withTimestamps,
@@ -254,6 +283,6 @@ async function buildRegistrationSnapshot(): Promise<{
 
 export const getRegistrationSnapshot = unstable_cache(
   buildRegistrationSnapshot,
-  ["nexaflow-registration-snapshot-v2", ...SNAPSHOT_CACHE_SCOPE],
+  ["nexaflow-registration-snapshot-v3", ...SNAPSHOT_CACHE_SCOPE],
   { revalidate: 60 },
 );

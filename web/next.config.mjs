@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Keep local production validation separate from the running preview's HMR cache.
+  // Vercel and normal commands retain Next's default output directory.
+  distDir: process.env.NEXAFLOW_ISOLATED_BUILD === "true" ? ".next-design-build" : ".next",
 
   webpack: (config) => {
     // `wagmi/connectors` is a barrel: importing `injected` from it also drags in

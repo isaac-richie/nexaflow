@@ -18,12 +18,15 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..", "..");
+const v6 = process.argv.includes("--v6");
+if (process.argv.slice(2).some(arg => arg !== "--v6")) throw new Error("Usage: gen-abi.mjs [--v6]");
 
 const ARTIFACT = resolve(
   repoRoot,
-  "out/BinaryMembershipV5.sol/BinaryMembershipV5.json",
+  v6 ? "out/BinaryMembershipV6.sol/BinaryMembershipV6.json" : "out/BinaryMembershipV5.sol/BinaryMembershipV5.json",
 );
-const OUT = resolve(here, "..", "lib/contracts/binaryMembershipAbi.ts");
+const outputName = v6 ? "binaryMembershipV6Abi.ts" : "binaryMembershipAbi.ts";
+const OUT = resolve(here, "..", "lib/contracts", outputName);
 
 if (!existsSync(ARTIFACT)) {
   console.error(
@@ -47,7 +50,7 @@ const counts = abi.reduce((acc, e) => {
 
 // Sanity check: the frontend calls these by name. If the contract renames one,
 // fail here rather than shipping a build that reverts in a member's wallet.
-const REQUIRED = [
+const REQUIRED = v6 ? ["register", "joinStage", "registered", "sponsorOf", "highestStage", "activePosition", "getPosition", "stages", "boardCount", "boardIdAt", "earnings", "claimable", "claim", "paused", "emergencyRecovery", "asset", "root"] : [
   "register",
   "joinStage",
   "findPlacementSlot",
@@ -65,14 +68,14 @@ if (missing.length) {
 }
 
 const header = `// GENERATED FILE - do not edit by hand.
-// Source: out/BinaryMembershipV5.sol/BinaryMembershipV5.json
-// Regenerate: forge build && npm --prefix web run gen:abi
+// Source: out/BinaryMembershipV${v6 ? "6" : "5"}.sol/BinaryMembershipV${v6 ? "6" : "5"}.json
+// Regenerate: forge build && npm --prefix web run gen:abi${v6 ? " -- --v6" : ""}
 
-export const BINARY_MEMBERSHIP_ABI = `;
+export const ${v6 ? "BINARY_MEMBERSHIP_V6_ABI" : "BINARY_MEMBERSHIP_ABI"} = `;
 
 writeFileSync(OUT, `${header}${JSON.stringify(abi, null, 2)} as const;\n`);
 
-console.log(`ABI written to lib/contracts/binaryMembershipAbi.ts`);
+console.log(`ABI written to lib/contracts/${outputName}`);
 console.log(
   `  ${counts.function ?? 0} functions, ${counts.event ?? 0} events, ${counts.error ?? 0} errors`,
 );

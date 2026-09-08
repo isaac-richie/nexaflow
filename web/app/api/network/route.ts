@@ -17,6 +17,15 @@ function boundedInteger(
 }
 
 export async function GET(request: NextRequest) {
+  const contract = request.nextUrl.searchParams.get("contract");
+  const version = request.nextUrl.searchParams.get("version");
+  const chain = request.nextUrl.searchParams.get("chain");
+  if (((process.env.NEXT_PUBLIC_MEMBERSHIP_VERSION ?? "v5") === "v6" && (!contract || !version || !chain)) ||
+    (contract && contract.toLowerCase() !== process.env.NEXT_PUBLIC_MEMBERSHIP_ADDRESS?.toLowerCase()) ||
+    (version && version !== (process.env.NEXT_PUBLIC_MEMBERSHIP_VERSION ?? "v5")) ||
+    (chain && chain !== (process.env.NEXT_PUBLIC_CHAIN === "bsc" ? "56" : "97"))) {
+    return NextResponse.json({ error: "This page uses a different deployment. Reload the website." }, { status: 409 });
+  }
   const rawAddress = request.nextUrl.searchParams.get("address");
   if (!rawAddress || !isAddress(rawAddress)) {
     return NextResponse.json({ error: "A valid member address is required." }, { status: 400 });

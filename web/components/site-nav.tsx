@@ -128,25 +128,43 @@ export function SiteNav() {
   );
 }
 
-/** Two edges feeding one node. The protocol as a glyph. */
-export function Mark({ size = 26 }: { size?: number }) {
+/**
+ * NexaFlow brand mark: the "N" with its right leg extended as an upward
+ * arrow — the letterform IS the bullish trend. Inlined (not <Image src=".."/>)
+ * so it ships in the same paint as the header, with no request or layout shift.
+ */
+export function Mark({ size = 28 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0"
+    >
       <defs>
-        <linearGradient id="markGrad" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0%" stopColor="hsl(var(--gold-hi))" />
-          <stop offset="100%" stopColor="hsl(var(--gold))" />
+        <linearGradient id="nf-mark-gold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FCD535" />
+          <stop offset="100%" stopColor="#F0B90B" />
+        </linearGradient>
+        <linearGradient id="nf-mark-gold-hi" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#FFE066" />
+          <stop offset="55%" stopColor="#FCD535" />
+          <stop offset="100%" stopColor="#E0A800" />
+        </linearGradient>
+        <linearGradient id="nf-mark-sheen" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.30" />
+          <stop offset="45%" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
       </defs>
+      <path d="M8 10 h11 v46 h-11 z" fill="url(#nf-mark-gold-hi)" />
+      <path d="M19 10 h9 l17 32 v14 h-9 l-17 -32 z" fill="url(#nf-mark-gold)" />
+      <path d="M45 22 h11 v34 h-11 z M39 22 h23 l-11.5 -18 z" fill="url(#nf-mark-gold-hi)" />
       <path
-        d="M6 26 C6 18, 16 18, 16 10 M26 26 C26 18, 16 18, 16 10"
-        stroke="url(#markGrad)"
-        strokeWidth="2.2"
-        strokeLinecap="round"
+        d="M8 10 h11 v3 h-11 z M39 22 h23 l-3.5 -5 h-16 z"
+        fill="url(#nf-mark-sheen)"
       />
-      <circle cx="16" cy="7" r="4" fill="url(#markGrad)" />
-      <circle cx="6" cy="27" r="2.6" fill="hsl(var(--gold))" opacity="0.7" />
-      <circle cx="26" cy="27" r="2.6" fill="hsl(var(--gold))" opacity="0.7" />
     </svg>
   );
 }

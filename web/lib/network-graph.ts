@@ -2,6 +2,8 @@ export type RegistrationRecord = {
   member: `0x${string}`;
   sponsor: `0x${string}`;
   memberId: number;
+  /** Stable log ordering for V6, whose Registered event has no member ID. */
+  logIndex?: number;
   blockNumber: number;
   transactionHash: `0x${string}`;
   /** Unix seconds. Optional so historical callers and tests still
