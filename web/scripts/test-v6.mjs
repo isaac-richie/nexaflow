@@ -100,6 +100,17 @@ test("public membership copy uses the brand without release labels", () => {
   assert.match(layout, /Legal disclosures/);
 });
 
+test("member pages keep re-entry copy short and link to full disclosures", () => {
+  for (const view of ["join", "boards"]) {
+    const html = render(view);
+    assert.match(html, /Your reserve funds the next board—not a cash bonus/);
+    assert.match(html, /href="\/legal#v6-reserves"/);
+    assert.doesNotMatch(html, /Re-entry reserves accrue|On-chain snapshot at block/);
+  }
+  const s = sample(); s.stages[0].latest.queued = true;
+  assert.match(render("boards", { snapshot: s }), /Manual processing costs BNB; placement may still be delayed/);
+});
+
 test("copy cleanup preserves the stored consent version and reserve disclosures", () => {
   const { CONSENT_VERSION } = loadV6("lib/consent.ts", {}, { process: { env: { NEXT_PUBLIC_MEMBERSHIP_VERSION: "v6" } } });
   assert.equal(CONSENT_VERSION, "2026-09-08-v6");
