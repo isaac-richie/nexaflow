@@ -48,25 +48,17 @@ function key(address: string): string {
  * cycle. Keeping this calculation pure makes that distinction testable.
  */
 
-/** Rolling 30-day new-registration histogram over a set of records, ending
- *  at the most-recent timestamp in the set (or "now" if none). Empty when no
+/** Rolling 30-day new-registration histogram ending today (UTC, inclusive).
+ *  Inactive days remain zero; the final seven buckets are today plus six days.
+ *  Empty when no
  *  record carries a timestamp — the caller shows the number without a chart. */
 function dailySeries(records: RegistrationRecord[], days = 30): Array<{ day: string; count: number }> {
   const timestamped = records.filter((r): r is RegistrationRecord & { timestamp: number } => typeof r.timestamp === "number");
   if (timestamped.length === 0) return [];
 
   const msPerDay = 86_400_000;
-  let anchorSec = timestamped[0].timestamp;
-  for (let index = 1; index < timestamped.length; index += 1) {
-    if (timestamped[index].timestamp > anchorSec) {
-      anchorSec = timestamped[index].timestamp;
-    }
-  }
-  const anchor = new Date(anchorSec * 1000);
-  // Anchor is inclusive; use midnight-UTC of that day as the last bucket.
-  const anchorDay = Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth(), anchor.getUTCDate());
-  const now = Date.now();
-  const endDay = Math.min(anchorDay, Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), new Date(now).getUTCDate()));
+  const now = new Date(Date.now());
+  const endDay = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
 
   const buckets = new Map<string, number>();
   for (let i = days - 1; i >= 0; i -= 1) {
