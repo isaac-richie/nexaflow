@@ -108,7 +108,8 @@ test("returns a safe empty network for an unrelated wallet", () => {
   assert.deepEqual(result.members, []);
 });
 
-test("builds a zero-filled 30-day registration series for the selected subtree", () => {
+test("builds a zero-filled 30-day registration series for the selected subtree", (t) => {
+  t.mock.method(Date, "now", () => Date.UTC(2026, 7, 2, 12));
   const day = Math.floor(Date.UTC(2026, 7, 1) / 1000);
   const records = [
     { ...record(1, 0), timestamp: day },
@@ -124,4 +125,50 @@ test("builds a zero-filled 30-day registration series for the selected subtree",
   );
   assert.equal(result.dailyRegistrations.at(-2)?.count, 1);
   assert.equal(result.dailyRegistrations.at(-1)?.count, 1);
+});
+
+test("inactive networks do not report old registrations as last-seven-day growth", (t) => {
+  const now = Date.UTC(2026, 8, 8, 12);
+  t.mock.method(Date, "now", () => now);
+  for (const age of [20, 60]) {
+    const timestamp = now / 1000 - age * 86_400;
+    const result = summarizeNetwork([
+      { ...record(1, 0), timestamp },
+      { ...record(2, 1), timestamp },
+    ], address(1));
+    assert.equal(result.personalReferrals, 1);
+    assert.equal(result.totalTeam, 1);
+    assert.equal(result.dailyRegistrations.length, 30);
+    assert.equal(result.dailyRegistrations.at(-1)?.day, "2026-09-08");
+    assert.equal(result.dailyRegistrations.slice(-7).reduce((sum, item) => sum + item.count, 0), 0);
+    assert.equal(result.dailyRegistrations.reduce((sum, item) => sum + item.count, 0), age < 30 ? 1 : 0);
+  }
+});
+
+test("seven-day growth respects UTC boundaries and excludes future days and other branches", (t) => {
+  const today = Date.UTC(2026, 8, 8) / 1000;
+  t.mock.method(Date, "now", () => today * 1000 + 12 * 3_600_000);
+  const records = [
+    { ...record(1, 0), timestamp: today },
+    { ...record(2, 1), timestamp: today - 6 * 86_400 - 1 },
+    { ...record(3, 1), timestamp: today - 6 * 86_400 },
+    { ...record(4, 3), timestamp: today },
+    { ...record(5, 1), timestamp: today + 86_400 },
+    { ...record(6, 0), timestamp: today },
+    { ...record(7, 6), timestamp: today },
+  ];
+  const result = summarizeNetwork(records, address(1));
+  assert.equal(result.dailyRegistrations.slice(-7).reduce((sum, item) => sum + item.count, 0), 2);
+  assert.equal(result.dailyRegistrations.at(-1)?.count, 1);
+  assert.equal(result.totalTeam, 4);
+});
+
+test("growth ages out across UTC midnight without a new registration", (t) => {
+  let now = Date.UTC(2026, 8, 8, 23, 59, 59);
+  t.mock.method(Date, "now", () => now);
+  const records = [record(1, 0), { ...record(2, 1), timestamp: Date.UTC(2026, 8, 2) / 1000 }];
+  const recent = () => summarizeNetwork(records, address(1)).dailyRegistrations.slice(-7).reduce((sum, item) => sum + item.count, 0);
+  assert.equal(recent(), 1);
+  now = Date.UTC(2026, 8, 9);
+  assert.equal(recent(), 0);
 });

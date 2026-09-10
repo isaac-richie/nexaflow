@@ -2,32 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/format";
+import styles from "./member-ui.module.css";
 
 const LINKS = [
-  { href: "/app", label: "Dashboard" },
-  { href: "/app/join", label: "Join" },
-  { href: "/app/board", label: "My Board" },
+  { href: "/app", label: "Overview", path: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z" },
+  { href: "/app/board", label: "My boards", path: "M9 3h6v5H9z M2 16h6v5H2z M16 16h6v5h-6z M12 8v4M5 16v-4h14v4" },
+  { href: "/app/network", label: "Network", path: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M16 3a4 4 0 0 1 0 8 M22 21v-2a4 4 0 0 0-3-3.9 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0" },
+  { href: "/app/join", label: "Join / unlock", path: "M12 5v14M5 12h14" },
 ];
 
 /**
  * App navigation.
  *
- * Rendered inline in the header on desktop and as a full-width strip beneath it
- * on mobile. It is deliberately never hidden behind a menu button: with only
- * three destinations, burying them costs a tap and hides the fact that Join
- * exists — which is the one route a new member needs to find.
+ * Desktop sidebar and safe-area-aware mobile bottom bar. Join remains visible;
+ * prefetched wallet routes are disabled to avoid unnecessary route downloads.
  */
 export function AppNav({ variant }: { variant: "inline" | "strip" }) {
   const pathname = usePathname();
 
   return (
     <nav
-      className={cn(
-        variant === "inline"
-          ? "hidden items-center gap-1 md:flex"
-          : "flex items-center gap-1 overflow-x-auto md:hidden",
-      )}
+      className={variant === "inline" ? styles.nav : styles.bottomNav}
       aria-label="Application"
     >
       {LINKS.map((l) => {
@@ -39,13 +34,12 @@ export function AppNav({ variant }: { variant: "inline" | "strip" }) {
           <Link
             key={l.href}
             href={l.href}
+            prefetch={false}
             aria-current={active ? "page" : undefined}
-            className={cn(
-              "whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-              active ? "bg-surface-2 text-ink" : "text-muted hover:text-ink",
-            )}
+            className={styles.navLink}
           >
-            {l.label}
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={l.path} /></svg>
+            <span>{l.label}</span>
           </Link>
         );
       })}

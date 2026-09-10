@@ -3,7 +3,7 @@
 import { useId, useMemo } from "react";
 import type { StageMembership } from "@/hooks/use-membership";
 import type { StagePreset } from "@/lib/contracts/config";
-import { formatToken } from "@/lib/format";
+import { memberAmount } from "@/lib/member-dashboard";
 import { PAYMENT_TOKEN_SYMBOL } from "@/lib/contracts/config";
 
 type Props = {
@@ -147,7 +147,7 @@ export function LiveBoard({ preset, membership }: Props) {
               {active ? (
                 <text x={node.x} y={node.y + 4} textAnchor="middle"
                   className="fill-up font-mono text-[9px] font-medium">
-                  ${preset.nodeReward}
+                  ✓
                 </text>
               ) : (
                 <text x={node.x} y={node.y + 3.5} textAnchor="middle"
@@ -171,7 +171,7 @@ export function LiveBoard({ preset, membership }: Props) {
           {preset.slots - filled} open
         </span>
         <span className="figure text-ink">
-          {formatToken(membership?.stageEarnings)}{" "}
+          {memberAmount(membership?.stageEarnings)}{" "}
           <span className="text-faint">{PAYMENT_TOKEN_SYMBOL}</span>
         </span>
       </div>

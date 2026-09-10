@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getAddress } from "viem";
 import {
   directReferralPathForAddress,
@@ -12,6 +12,9 @@ export function ReferralCard({ address }: { address?: `0x${string}` }) {
   const [origin, setOrigin] = useState("");
   const [copied, setCopied] = useState<"share" | "direct" | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [error, setError] = useState("");
+  const resetTimer = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(resetTimer.current), []);
 
   useEffect(() => setOrigin(window.location.origin), []);
 
@@ -47,14 +50,21 @@ export function ReferralCard({ address }: { address?: `0x${string}` }) {
   }
 
   async function copy(kind: "share" | "direct", value: string) {
-    await copyText(value);
-    setCopied(kind);
-    window.setTimeout(() => setCopied(null), 1800);
+    setError("");
+    try {
+      await copyText(value);
+      setCopied(kind);
+      clearTimeout(resetTimer.current);
+      resetTimer.current = setTimeout(() => setCopied(null), 1800);
+    } catch {
+      setError("Copy is unavailable. Select the referral link and copy it manually.");
+    }
   }
 
   async function share() {
     if (!shareUrl) return;
     setSharing(true);
+    setError("");
     try {
       if (navigator.share) {
         await navigator.share({
@@ -64,6 +74,10 @@ export function ReferralCard({ address }: { address?: `0x${string}` }) {
         });
       } else {
         await copy("share", shareUrl);
+      }
+    } catch (shareError) {
+      if (!(shareError instanceof Error && shareError.name === "AbortError")) {
+        setError("Sharing is unavailable. Use Copy to share your link instead.");
       }
     } finally {
       setSharing(false);
@@ -101,6 +115,7 @@ export function ReferralCard({ address }: { address?: `0x${string}` }) {
         </div>
       </div>
 
+      <p role="status" className="mt-3 text-xs text-muted">{error || (copied ? "Referral link copied." : "")}</p>
       <details className="mt-4 text-xs text-faint">
         <summary className="cursor-pointer hover:text-muted">Direct wallet fallback</summary>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">

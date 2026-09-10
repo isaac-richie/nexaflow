@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="NexaFlow">
+  <defs>
+    <linearGradient id="nf-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FCD535"/>
+      <stop offset="100%" stop-color="#F0B90B"/>
+    </linearGradient>
+    <linearGradient id="nf-gold-hi" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFE066"/>
+      <stop offset="55%" stop-color="#FCD535"/>
+      <stop offset="100%" stop-color="#E0A800"/>
+    </linearGradient>
+    <linearGradient id="nf-sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <path d="M8 10 h11 v46 h-11 z" fill="url(#nf-gold-hi)"/>
+  <path d="M19 10 h9 l17 32 v14 h-9 l-17 -32 z" fill="url(#nf-gold)"/>
+  <path d="M45 22 h11 v34 h-11 z M39 22 h23 l-11.5 -18 z" fill="url(#nf-gold-hi)"/>
+  <path d="M8 10 h11 v3 h-11 z M39 22 h23 l-3.5 -5 h-16 z" fill="url(#nf-sheen)"/>
+</svg>

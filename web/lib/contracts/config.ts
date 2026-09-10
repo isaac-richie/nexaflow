@@ -1,9 +1,16 @@
 import { bsc, bscTestnet } from "wagmi/chains";
+import { isAddress } from "viem";
+
+/** Explicit opt-in: a V5 deployment must never receive V6 calls by accident. */
+export const MEMBERSHIP_VERSION = process.env.NEXT_PUBLIC_MEMBERSHIP_VERSION ?? "v5";
+if (!["v5", "v6"].includes(MEMBERSHIP_VERSION)) throw new Error("Unsupported membership version");
+export const IS_V6 = MEMBERSHIP_VERSION === "v6";
+export const V6_RUNTIME_HASH = process.env.NEXT_PUBLIC_V6_RUNTIME_HASH as `0x${string}` | undefined;
 
 /**
  * Contract + chain configuration.
  *
- * V4 pays fixed fees in canonical BSC USDT at
+ * V5 pays fixed fees in canonical BSC USDT at
  * 0x55d398326f99059fF775485246999027B3197955. The membership address remains
  * environment-driven so a future audited redeployment is a configuration
  * change rather than a source-code edit.
@@ -37,6 +44,7 @@ export const PAYMENT_TOKEN_SYMBOL = "USDT";
  * "not deployed" state, never fabricated zeroes.
  */
 export const IS_DEPLOYED =
+  isAddress(MEMBERSHIP_ADDRESS) && isAddress(PAYMENT_TOKEN_ADDRESS) &&
   MEMBERSHIP_ADDRESS !== ZERO_ADDRESS && PAYMENT_TOKEN_ADDRESS !== ZERO_ADDRESS;
 
 /**

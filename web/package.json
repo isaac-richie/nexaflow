@@ -9,10 +9,16 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test:rpc": "node scripts/test-rpc-policy.mjs",
-    "test:network": "node --no-warnings --experimental-strip-types --test scripts/test-network-graph.mts",
+    "test:preview": "node --test scripts/test-dashboard-preview.mjs",
+    "test:member": "node --test scripts/test-member-dashboard.mjs",
+    "test:v6": "node --test scripts/test-v6.mjs scripts/test-v6-transactions.mjs scripts/test-v6-network.mjs scripts/test-connect-button.mjs",
+    "test:v6:integration": "node scripts/test-v6-integration.mjs",
+    "test:keeper": "node --test scripts/test-queue-keeper.mjs scripts/test-queue-keeper-redis.mjs",
+    "test:network": "node --no-warnings --experimental-strip-types --test scripts/test-network-graph.mts && node --test scripts/test-network-cache.mjs",
     "gen:abi": "node scripts/gen-abi.mjs"
   },
   "dependencies": {
+    "@react-three/fiber": "8.18.0",
     "@privy-io/react-auth": "3.35.0",
     "@privy-io/wagmi": "4.0.14",
     "@tanstack/react-query": "^5.51.23",
@@ -22,10 +28,12 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "tailwind-merge": "^2.5.2",
+    "three": "0.170.0",
     "viem": "2.52.0",
     "wagmi": "^2.12.7"
   },
   "devDependencies": {
+    "@types/three": "0.170.0",
     "@types/node": "20.14.14",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",

@@ -26,13 +26,17 @@ import {
   ProtocolNotOpenNotice,
 } from "@/components/app/states";
 import { formatToken, shortAddress } from "@/lib/format";
+import { V6Member } from "@/components/app/v6-member";
+import { IS_V6 } from "@/lib/contracts/config";
+
+export default function JoinPage() { return IS_V6 ? <V6Member view="join" /> : <V5JoinPage />; }
 
 /**
- * V4 is intentionally sequential: a first-time member buys Stage 1, which
+ * V5 is intentionally sequential: a first-time member buys Stage 1, which
  * immediately unlocks Stage 2. Each later board unlocks only after the prior
  * one has been joined. Fees are fixed USDT amounts read from the contract.
  */
-export default function JoinPage() {
+function V5JoinPage() {
   const { address: connectedAddress, isConnected } = useAccount();
   const {
     isRegistered,

@@ -3,6 +3,7 @@
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import { BINARY_MEMBERSHIP_ABI } from "@/lib/contracts/binaryMembershipAbi";
 import {
+  ACTIVE_CHAIN,
   IS_DEPLOYED,
   MAX_STAGES,
   MEMBERSHIP_ADDRESS,
@@ -11,6 +12,7 @@ import {
 import { NO_BACKGROUND_RPC, RPC_CACHE_MS } from "@/lib/rpc-policy";
 
 const base = {
+  chainId: ACTIVE_CHAIN.id,
   address: MEMBERSHIP_ADDRESS,
   abi: BINARY_MEMBERSHIP_ABI,
 } as const;

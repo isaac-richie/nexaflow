@@ -1,5 +1,5 @@
 // GENERATED FILE - do not edit by hand.
-// Source: out/BinaryMembershipV4.sol/BinaryMembershipV4.json
+// Source: out/BinaryMembershipV5.sol/BinaryMembershipV5.json
 // Regenerate: forge build && npm --prefix web run gen:abi
 
 export const BINARY_MEMBERSHIP_ABI = [
@@ -2018,6 +2018,31 @@ export const BINARY_MEMBERSHIP_ABI = [
         "type": "address",
         "indexed": true,
         "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TreasuryAutoSplit",
+    "inputs": [
+      {
+        "name": "totalAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "treasuryAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "companyAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
       }
     ],
     "anonymous": false

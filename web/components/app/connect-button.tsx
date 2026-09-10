@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { usePrivy } from "@privy-io/react-auth";
+import { useConnectWallet, useLogin, usePrivy } from "@privy-io/react-auth";
 import { useAccount, useSwitchChain } from "wagmi";
 import { AnimatePresence, motion } from "framer-motion";
 import { ACTIVE_CHAIN } from "@/lib/contracts/config";
@@ -20,13 +20,36 @@ import { cn, shortAddress } from "@/lib/format";
  *  - the connected account menu.
  */
 export function ConnectButton({ className }: { className?: string }) {
-  const { ready, authenticated, login, logout } = usePrivy();
+  const { ready, authenticated, logout } = usePrivy();
   const { address, isConnected, chainId } = useAccount();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
 
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [connectionError, setConnectionError] = useState("");
+  const reportConnectionError = () =>
+    setConnectionError("Wallet connection was not completed. Please try again.");
+  const { login } = useLogin({
+    onComplete: () => setConnectionError(""),
+    onError: reportConnectionError,
+  });
+  const { connectWallet } = useConnectWallet({
+    onSuccess: () => setConnectionError(""),
+    onError: reportConnectionError,
+  });
   useEffect(() => setMounted(true), []);
+
+  async function connect() {
+    setConnectionError("");
+    try {
+      // Authentication can survive an extension disconnect or page reload.
+      // Privy ignores login() for an authenticated user; reconnect instead.
+      if (authenticated) await connectWallet({ walletChainType: "ethereum-only" });
+      else await login();
+    } catch {
+      reportConnectionError();
+    }
+  }
 
   // Privy rehydrates its session asynchronously. Rendering a "Connect" button
   // during that window makes an already-connected member think they were
@@ -63,7 +86,7 @@ export function ConnectButton({ className }: { className?: string }) {
     );
   }
 
-  if (authenticated && address) {
+  if (authenticated && isConnected && address) {
     return (
       <div className={cn("relative", className)}>
         <button
@@ -137,11 +160,17 @@ export function ConnectButton({ className }: { className?: string }) {
   }
 
   return (
-    <button
-      onClick={login}
-      className={cn("btn-gold px-5 py-2 text-sm", className)}
-    >
-      Connect Wallet
-    </button>
+    <div className="flex flex-col items-start gap-2">
+      <button
+        type="button"
+        onClick={connect}
+        className={cn("btn-gold px-5 py-2 text-sm", className)}
+      >
+        Connect Wallet
+      </button>
+      {connectionError && (
+        <p role="alert" className="max-w-xs text-sm text-down">{connectionError}</p>
+      )}
+    </div>
   );
 }
