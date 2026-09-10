@@ -1,5 +1,7 @@
 # Serverless re-entry keeper (existing V6)
 
+<!-- Deployment marker: environment-configured production build. -->
+
 ## Status
 
 Implemented locally, disabled by default. No wallet generated/funded, no live key loaded, no Redis account provisioned, no scheduled job enabled, and no contract transaction submitted by this implementation task. The production contract and ABI are unchanged. Deployment and a controlled live canary are still required.
