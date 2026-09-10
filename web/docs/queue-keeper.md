@@ -1,6 +1,6 @@
 # Serverless re-entry keeper (existing V6)
 
-<!-- Deployment marker: environment-configured production build. -->
+<!-- Deployment marker: dry-run environment verification build. -->
 
 ## Status
 
